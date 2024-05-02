@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, ScrollView, Image, TextInput, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { myColors } from "../../Utils/myColors";
@@ -6,11 +6,17 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import UserContext from "../../Contexts/UserContext";
 
 const Signup = () => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [phone, setPhone] = useState(null);
+  const [address, setAddress] = useState(null);
+
+  const { baseUrl,setUserInfo } = useContext(UserContext)
 
  
 
@@ -19,15 +25,134 @@ const Signup = () => {
 
   const [isVisible, setIsVisible] = useState(true);
   const nav=useNavigation()
+
+  
+
+  const handleSignup = () => {
+    // Check if all required fields are filled
+    if (!username || !email || !password || !confirm || !phone || !address) {
+      // If any of the required fields are missing, display an error message
+      showAlert('All fields are required');
+      return;
+    }
+  
+    // Check if username is at least 5 characters long
+    if (username.length < 5) {
+      showAlert('Username must be at least 5 characters');
+      return;
+    }
+  
+    // Check if username contains a number
+    if (!/\d/.test(username)) {
+      showAlert('Username must contain a number');
+      return;
+    }
+  
+    // Check if password and confirm password match
+    if (password !== confirm) {
+      showAlert('Password and Confirm Password should be the same');
+      return;
+    }
+  
+    // Check if password is at least 5 characters long
+    if (password.length < 5) {
+      showAlert('Password should contain at least 5 characters');
+      return;
+    }
+  
+    // Check if username contains any space
+    if (username.includes(" ")) {
+      showAlert('Username should not contain any space');
+      return;
+    }
+  
+    // Check if password contains any space
+    if (password.includes(" ")) {
+      showAlert('Password should not contain any space');
+      return;
+    }
+  
+    // Check if phone number is valid
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      showAlert('Please enter a valid 10-digit phone number');
+      return;
+    }
+  
+    // Check if address is at least 10 characters long
+    if (address.length < 10) {
+      showAlert('Address should be at least 10 characters long');
+      return;
+    }
+  
+    // Construct object with all fields
+    const userDetails = {
+      "username": username,
+      "email": email,
+      "password": password,
+      "confirm_password": confirm,
+      "phone": phone,
+      "address": address
+    };
+    setUserInfo(userDetails)
+  
+    // Create object with only required fields for registration
+    const registrationData = {
+      "username": username,
+      "password": password,
+      "confirm": confirm
+    };
+  
+    // Send registration data to the API
+    fetch('https://habib92.pythonanywhere.com/api/signup/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(registrationData)
+    })
+    .then(response => {
+      if (response.ok) {
+        console.log( response.json())
+      } else {
+        console.log(response.json())
+      }
+    })
+    .then(data => {
+      console.log('Registration successful:', data);
+      showAlert('Registration successful');
+      nav.navigate("Login"); // Navigate after successful registration
+    })
+    .catch(error => {
+      console.error('Error registering:', error);
+      showAlert(error);
+    });
+  }
+  
+  // Function to display styled alert
+  const showAlert = (message) => {
+    Alert.alert(
+      'Message',
+      message,
+      [
+        { text: 'OK', onPress: () => console.log('OK Pressed') }
+      ],
+      { cancelable: false }
+    );
+  }
+  
+
+
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: myColors.primary }}>
       <StatusBar style="dark" />
-      <ScrollView style={{ flex: 1, paddingTop: 10 }}>
+      <ScrollView style={{ flex: 1, paddingTop: 5 }}>
         <Image
           style={{ height: 150, width: 120, alignSelf: "center" }}
           source={require("../../assets/sign.png")}
         />
-        <View style={{ paddingHorizontal: 20, marginTop: 5 }}>
+        <View style={{ paddingHorizontal: 20, marginTop: 3 }}>
           <Text
             style={{
               color: myColors.secondary,
@@ -58,11 +183,12 @@ const Signup = () => {
             Username
           </Text>
           <TextInput
+            onChangeText={setUsername}
             style={{
               borderColor: "#E3E3E3",
               borderBottomWidth: 2,
               fontSize: 16,
-              marginTop: 5,
+              marginTop: 3,
             }}
           />
           
@@ -77,12 +203,13 @@ const Signup = () => {
             Email
           </Text>
           <TextInput
+            onChangeText={setEmail}
             keyboardType="email-address"
             style={{
               borderColor: "#E3E3E3",
               borderBottomWidth: 2,
               fontSize: 16,
-              marginTop: 5,
+              marginTop: 3,
             }}
           />
           <Text
@@ -104,14 +231,53 @@ const Signup = () => {
             }}
           >
             <TextInput
+              onChangeText={setPassword}
               secureTextEntry={!isVisible}
-              maxLength={7}
               style={{
                 fontSize: 17,
-                marginTop: 5,
+                marginTop: 3,
                 flex: 0.9,
               }}
             />
+
+            <Ionicons
+              onPress={() => {
+                setIsVisible(!isVisible);
+              }}
+              style={{ marginTop: 10 }}
+              name={isVisible == true ? "eye-outline" : "eye-off-outline"}
+              size={22}
+              color="black"
+            />
+          </View>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "400",
+              color: "grey",
+              marginTop: 25,
+            }}
+          >
+            Confirm Password
+          </Text>
+          <View
+            style={{
+              borderColor: "#E3E3E3",
+              borderBottomWidth: 2,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <TextInput
+              onChangeText={setConfirm}
+              secureTextEntry={!isVisible}
+              style={{
+                fontSize: 17,
+                marginTop: 3,
+                flex: 0.9,
+              }}
+            />
+
             <Ionicons
               onPress={() => {
                 setIsVisible(!isVisible);
@@ -133,11 +299,12 @@ const Signup = () => {
             Mobile Number
           </Text>
           <TextInput
+            onChangeText={setPhone}
             style={{
               borderColor: "#E3E3E3",
               borderBottomWidth: 2,
               fontSize: 16,
-              marginTop: 5,
+              marginTop: 3,
             }}
           />
           
@@ -152,27 +319,26 @@ const Signup = () => {
             Address
           </Text>
           <TextInput
+            onChangeText={setAddress}
             style={{
               borderColor: "#E3E3E3",
               borderBottomWidth: 2,
               fontSize: 16,
-              marginTop: 5,
+              marginTop: 3,
             }}
           />
           
           
           <TouchableOpacity
-            onPress={() => {
-            nav.navigate('Login');
-            }}
+            onPress={handleSignup}
             style={{
               backgroundColor: "#2eb24b",
-              marginTop: 30,
               height: 60,
               borderRadius: 20,
               alignItems: "center",
               justifyContent: "center",
               marginTop: 25,
+
             }}
           >
             <Text style={{ fontSize: 19, color: "white", fontWeight: "600" }}>
@@ -184,15 +350,15 @@ const Signup = () => {
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
-              marginTop: 20,
+              marginTop: 25,
               gap:5,
             }}
           >
-            <Text style={{ fontSize: 16, color: "grey" }}>
+            <Text style={{ fontSize: 16, color: "grey", }}>
               Already have an account?
             </Text>
             <TouchableOpacity 
-            onPress={{}}
+            onPress={() => nav.navigate("Login")}
             >
               
             <Text

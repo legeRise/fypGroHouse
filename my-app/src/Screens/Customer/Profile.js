@@ -6,14 +6,29 @@ import {
   TouchableOpacity,
   TouchableRipple,
 } from "react-native";
-import React from "react";
+import React,{useEffect,useContext} from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import HomeIcon from "../../Components/HomeIcon";
 import { FontAwesome5 } from '@expo/vector-icons';
+import UserContext from "../../Contexts/UserContext";
+
+import { useNavigation } from '@react-navigation/native';
 
 const Profile = () => {
+  
+  const nav = useNavigation()
+  const { setToken,baseUrl } = useContext(UserContext)
+
+  const handleLogout = () => {
+    nav.navigate("Login"); // Navigate to the "Login" screen
+  }
+    
+  
+
+
+
   return (
     <SafeAreaView style={styles.container}>
       <HomeIcon />
@@ -112,13 +127,20 @@ const Profile = () => {
               <Text>Support</Text>
             </View>
           </TouchableOpacity>
+
           <TouchableOpacity
-            onPress={() => {}}
-            
-          >
+            onPress={() => {}}>
             <View onPress={() => {}} style={styles.menuItem}>
             <FontAwesome5 name="user-edit" size={20} color="#FF6347"  style={{marginRight: 15}} />
               <Text>Edit Profile</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleLogout}>
+            <View  style={styles.menuItem}>
+            <FontAwesome5 name="sign-out-alt" size={20} color="#FF6347"  style={{marginRight: 15}} />
+              <Text>Logout</Text>
             </View>
           </TouchableOpacity>
         </View>

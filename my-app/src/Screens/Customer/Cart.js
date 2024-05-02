@@ -79,7 +79,7 @@ const Cart = () => {
                 <Image
                   style={{ height: 80, width: 80, resizeMode: "contain" }}
                   source={{
-                    uri: item.img,
+                    uri: item.image,
                   }}
                 />
               </View>
@@ -177,7 +177,7 @@ const Cart = () => {
       </View>
       <TouchableOpacity
   onPress={() => {
-    nav.navigate("Complete", { order: storeData.map(item => ({ ...item, img: item.img })) });
+    nav.navigate("Complete", { order: storeData.map(item => ({ ...item, img: item.image })) });
   }}
   style={{
     backgroundColor: "#2eb24b",

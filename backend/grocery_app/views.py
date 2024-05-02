@@ -63,9 +63,21 @@ def list_products(request):
         cat_id =product["category"]
         category =Category.objects.get(id=cat_id)
         product["category"] = category.name
-    
+    return Response(serializer.data)
 
 
+# view all products in a category
+@csrf_exempt
+@api_view(['GET'])
+def list_products_by_category(request,cat_id):
+    print(cat_id)
+    products = Product.objects.filter(category=cat_id)
+    print(products,74)
+    serializer = ProductSerializer(products, many=True)
+    for product in serializer.data:
+        cat_id =product["category"]
+        category =Category.objects.get(id=cat_id)
+        product["category"] = category.name
     return Response(serializer.data)
 
 

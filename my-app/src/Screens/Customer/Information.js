@@ -1,15 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import HomeIcon from '../../Components/HomeIcon';
+import UserContext from '../../Contexts/UserContext';
+
+
 
 const Information = ({ route }) => {
+  const { userInfo } = useContext(UserContext)
+  console.log(userInfo,'this is info 11')
+  
   const navigation = useNavigation();
-  const [name, setName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [city, setCity] = useState('');
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState("");
+
+
+  // const [name, setName] = useState(userInfo.username);
+  // const [phoneNumber, setPhoneNumber] = useState(userInfo.phone);
+  // const [email, setEmail] = useState(userInfo.email);
+  // const [city, setCity] = useState('');
+  // const [address, setAddress] = useState(userInfo.address);
 
   const handleSubmit = () => {
     navigation.navigate('Payment', {

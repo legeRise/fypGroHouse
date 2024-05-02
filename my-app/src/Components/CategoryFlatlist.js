@@ -7,15 +7,20 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import { myColors } from "../Utils/myColors";
+import HomeIcon from "./HomeIcon";
 
-const CategoryFlatlist = ({ data }) => {
+const CategoryFlatlist = ({ route }) => {
+  const { products } = route.params
+
   const nav = useNavigation();
 
   return (
+    <SafeAreaView style={{marginTop:10,gap:10}}>
+      <HomeIcon/>
     <FlatList
       numColumns={2} // Set the number of columns to 2
       showsVerticalScrollIndicator={false}
-      data={data}
+      data={products}
       keyExtractor={(item, index) => index.toString()} // Key extractor for each item
       renderItem={({ item, index }) => (
         <TouchableOpacity
@@ -35,7 +40,7 @@ const CategoryFlatlist = ({ data }) => {
         >
           <Image
             style={{ height: 100, resizeMode: "contain" }}
-            source={{ uri: item.img }}
+            source={{ uri: item.image }}
           />
           <View style={{ paddingHorizontal: 10, gap: 3, alignItems: "center" }}>
             <Text
@@ -63,8 +68,10 @@ const CategoryFlatlist = ({ data }) => {
             </Text>
           </View>
         </TouchableOpacity>
+        
       )}
     />
+    </SafeAreaView>
   );
 };
 

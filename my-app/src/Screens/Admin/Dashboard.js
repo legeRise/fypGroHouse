@@ -19,12 +19,12 @@ const Dashboard = () => {
             {/* First Column */}
             <View style={[styles.column, {backgroundColor: 'white', borderColor: 'purple', borderWidth: 2}]}>
               <Text style={styles.title}>Total Sale</Text>
-              <Text style={styles.value}>$20,000</Text>
+              <Text style={styles.value}>Rs 20,000</Text>
             </View>
             {/* Second Column */}
             <View style={[styles.column, {backgroundColor: 'white', borderColor: 'red', borderWidth: 2}]}>
               <Text style={styles.title}>Total Expense</Text>
-              <Text style={styles.value}>$15,000</Text>
+              <Text style={styles.value}>Rs 15,000</Text>
             </View>
           </View>
           {/* Second Row */}

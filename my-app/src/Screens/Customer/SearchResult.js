@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { View, Text, FlatList, Image, TouchableOpacity, TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,18 +8,46 @@ import { addToCart } from "../../../Redux/CartSlice";
 import { responsiveWidth } from "react-native-responsive-dimensions";
 import { Feather } from "@expo/vector-icons"; // Import Feather icon
 import HomeIcon from "../../Components/HomeIcon";
-import { fruits } from "../../Utils/Data"; // Import fruits data
+
 
 const SearchResult = () => {
   const nav = useNavigation();
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredFruits, setFilteredFruits] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [products, setProducts] = useState([]);
+  
+
+
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://192.168.221.249:9200/products/all_products');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+
+    // Clean-up function
+    return () => {
+      // Any clean-up code here
+    };
+  }, []);
+  
+
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
       onPress={() => {
-        nav.navigate("Details", { main: item });
+        nav.navigate("Details", { products: item });
       }}
       activeOpacity={0.7}
       style={{
@@ -37,7 +65,7 @@ const SearchResult = () => {
           width: responsiveWidth(40),
           resizeMode: "contain",
         }}
-        source={{ uri: item.img }}
+        source={{ uri: item.image }}
       />
       <View
         style={{ paddingHorizontal: 10, marginTop: 5, alignItems: "center" }}
@@ -82,10 +110,10 @@ const SearchResult = () => {
 
   const handleSearch = (text) => {
     setSearchQuery(text);
-    const filteredItems = fruits.filter((item) =>
+    const filteredItems = products.filter((item) =>
       item.name.toLowerCase().includes(text.toLowerCase())
     );
-    setFilteredFruits(filteredItems);
+    setFilteredProducts(filteredItems);
   };
 
   return (
@@ -102,7 +130,7 @@ const SearchResult = () => {
       </View>
       {searchQuery ? (
         <FlatList
-          data={filteredFruits}
+          data={filteredProducts}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
           numColumns={2}

@@ -24,8 +24,8 @@ LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
 const Details = ({ route }) => {
   const nav=useNavigation()
   const dispatch = useDispatch();
-  const productData = route.params?.main;
-  const { name, price, pieces, img } = productData;
+  const productData = route.params?.products;
+  const { name, price, pieces, image } = productData;
   
   return (
     <SafeAreaView style={{ flex: 1, gap: 20, backgroundColor: "white" }}>
@@ -39,7 +39,7 @@ const Details = ({ route }) => {
               borderBottomRightRadius: 15,
             }}
             source={{
-              uri: img,
+              uri: image,
             }}
           />
           <View
@@ -86,7 +86,7 @@ const Details = ({ route }) => {
               paddingTop: 20,
             }}
           >
-            ${price}/{pieces}
+            Rs {price}/{pieces}
           </Text>
           <Dropbox />
           <Rate/>

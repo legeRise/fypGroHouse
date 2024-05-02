@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'grocery_app.apps.GroceryAppConfig',
-    'rest_framework'
+    'rest_framework',
+    'auth_app'
 
 ]
 
@@ -155,4 +156,7 @@ AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME= os.getenv("AWS_S3_REGION_NAME")
 
+
+
+AUTH_USER_MODEL = 'auth_app.User'
 

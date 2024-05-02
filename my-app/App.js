@@ -25,6 +25,7 @@ import CategoryFlatlist from "./src/Components/CategoryFlatlist";
 import Products from "./src/Screens/Customer/Products";
 import Stock from "./src/Screens/Admin/Stock";
 
+import { useContext,useEffect,useState } from 'react';
 import Forgotpass from "./src/Screens/Customer/Forgotpass";
 import Ott from "./src/Screens/Customer/Ott";
 import Reset from "./src/Screens/Customer/Reset";
@@ -55,22 +56,50 @@ import ReConfirm from "./src/Screens/Customer/ReConfirm";
 import Final from "./src/Screens/Customer/Final";
 import OrderList from "./src/Screens/Admin/OrderList";
 import OrderDeatail from "./src/Screens/Admin/OrderDeatail";
+import UserContext from './src/Contexts/UserContext';
 
 
 const Stack = createNativeStackNavigator();
 
+
+
+
+
+
 const AppNavigator = () => {
+    
+const { setToken } = useContext(UserContext)
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const response = await fetch('http://192.168.221.249:9200/auth/secret_token');
+        if (!response.ok) {
+          throw new Error('Failed to fetch token');
+        }
+        const data = await response.json();
+        const token = data.token; // Assuming the response contains a JSON object with a 'token' property
+        console.log(data.token); // Assuming the response contains a JSON object with a 'token' property
+        setToken(token);
+      } catch (error) {
+        console.error('Error fetching token:', error);
+      }
+    };
+  
+    fetchToken(); // Call the fetchToken function when the component mounts
+  }, []);
+
+
   return (
     <Provider store={Store}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Splash"
+          initialRouteName="Login"
           screenOptions={{
             headerShown: false,
           }}
         >
-          <Stack.Screen name="Splash" component={Splash} />
-          
+          <Stack.Screen name="Splash" component={Splash}  />
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="Forgotpass" component={Forgotpass} />
           <Stack.Screen name="Login" component={Login} />
@@ -109,7 +138,7 @@ const AppNavigator = () => {
           <Stack.Screen name="ProDetail" component={ProDetail} />
           <Stack.Screen name="Viewcat" component={Viewcat} />
           <Stack.Screen name="Tabb" component={Tabb} />
-          <Stack.Screen name="Prodd" component={Prodd} />
+          <Stack.Screen name="Prodd" component={Prodd} />  
           <Stack.Screen name="Chatbot" component={Chatbot} />
           <Stack.Screen name="SearchResult" component={SearchResult} />
           <Stack.Screen name="Information" component={Information} />

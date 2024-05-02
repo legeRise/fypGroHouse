@@ -1,4 +1,5 @@
 import {
+  Alert,
   View,
   Text,
   ScrollView,
@@ -6,17 +7,139 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { myColors } from "../../Utils/myColors";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import Tabs from "./Tabs";
+import UserContext from "../../Contexts/UserContext";
 
 const Login = () => {
   const [isVisible, setIsVisible] = useState(true);
+  // const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { baseUrl,token,setUserInfo }  = useContext(UserContext)
+
+
+
+
+
   const nav=useNavigation()
+
+
+//   // email : email,
+//   const handleLogin = () => {
+//     user_credentials = {
+//       "username" : username,
+//       "password" : password
+//     }
+    
+//     fetch("https://habib92.pythonanywhere.com/api/login/", {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json',
+//   },
+//   body: JSON.stringify(user_credentials)
+// })
+// .then(response => {
+//   if (!response.ok) {
+//     throw new Error('Login failed'); // Throw an error if response is not okay
+//   }
+//   return response.json(); // Parse response body as JSON
+// })
+// .then(data => {
+//   console.log('Login successful:', data);
+//   setUserInfo(data.info)
+//   nav.navigate("Tabs"); // Navigate after successful login
+// })
+// .catch(error => {
+//   console.error('Error logging in:', error);
+//   // Handle errors or display error message to the user
+// });
+// //     fetch(`${baseUrl}/auth/login/`, {
+// //   method: 'POST',
+// //   headers: {
+// //     'Content-Type': 'application/json',
+// //     'X-CSRFToken': token,
+// //   },
+// //   body: JSON.stringify(user_credentials)
+// // })
+// // .then(response => {
+// //   if (!response.ok) {
+// //     throw new Error('Login failed'); // Throw an error if response is not okay
+// //   }
+// //   return response.json(); // Parse response body as JSON
+// // })
+// // .then(data => {
+// //   console.log('Login successful:', data);
+// //   setUserInfo(data.info)
+// //   nav.navigate("Tabs"); // Navigate after successful login
+// // })
+// // .catch(error => {
+// //   console.error('Error logging in:', error);
+// //   // Handle errors or display error message to the user
+// // });
+
+
+//   }
+
+const handleLogin = () => {
+  // Check if username and password are provided
+  if (!username || !password) {
+    showAlert('Username and password are required');
+    return;
+  }
+
+  // Construct object with user credentials
+  const userCredentials = {
+    "username": username,
+    "password": password
+  };
+
+  // Send login data to the API
+  fetch("https://habib92.pythonanywhere.com/api/login/", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userCredentials)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Login failed'); // Throw an error if response is not okay
+    }
+    return response.json(); // Parse response body as JSON
+  })
+  .then(data => {
+    console.log('Login successful:', data);
+    showAlert('Login successful');
+    setUserInfo(data.info);
+    nav.navigate("Tabs"); // Navigate after successful login
+  })
+  .catch(error => {
+    // console.error('Error logging in:', error);
+    showAlert('Invalid Credentials');
+  });
+}
+
+// Function to display styled alert
+const showAlert = (message) => {
+  Alert.alert(
+    'Message',
+    message,
+    [
+      { text: 'OK', onPress: () => console.log('OK Pressed') }
+    ],
+    { cancelable: false }
+  );
+}
+
+
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: myColors.primary }}>
       <StatusBar style="dark" />
@@ -43,7 +166,7 @@ const Login = () => {
               marginTop: 10,
             }}
           >
-            Enter your mobile number and password
+            Enter your Email and password
           </Text>
           <Text
             style={{
@@ -53,9 +176,10 @@ const Login = () => {
               marginTop: 30,
             }}
           >
-            Mobile Number / Email
+             Username
           </Text>
           <TextInput
+            onChangeText={setUsername}
             style={{
               borderColor: "#E3E3E3",
               borderBottomWidth: 2,
@@ -83,7 +207,7 @@ const Login = () => {
           >
             <TextInput
               secureTextEntry={!isVisible}
-              maxLength={7}
+              onChangeText={setPassword}
               keyboardType="ascii-capable"
               style={{
                 fontSize: 17,
@@ -120,9 +244,7 @@ const Login = () => {
             
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              nav.navigate('Tabs');
-            }}
+            onPress={handleLogin}
             style={{
               backgroundColor: "#2eb24b",
               marginTop: 30,

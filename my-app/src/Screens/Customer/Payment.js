@@ -14,7 +14,7 @@ const Payment = ({ route }) => {
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCVV] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
+  const [mobileNumber, setMobileNumber] = useState(phoneNumber);
 
   const handleConfirmPayment = () => {
     console.log('Payment confirmed!');

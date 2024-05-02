@@ -8,6 +8,7 @@ urlpatterns = [
 
     # product apis
     path('all_products/', views.list_products, name='all_products'),
+    path('list_category_products/<str:cat_id>', views.list_products_by_category, name='all_category_products'),
     path('single_product/<str:product_id>', views.single_product, name='single_product'),
     path('add_product/', views.add_product, name='add_product'),
     path('update_product/<str:product_id>', views.update_product, name='update_product'),
