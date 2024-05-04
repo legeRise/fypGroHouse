@@ -1,22 +1,118 @@
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.db.models import Count
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
-from .models import Product,Prediction_Model,Dataset,Category
+from django.shortcuts import get_object_or_404
+from .models import Product,Prediction_Model,Dataset,Category,Order,OrderProduct,Customer,Product,Interaction
 from .useful_functions import save_profile_pic
 from .helper_functions import load_model
-from .serializers import ProductSerializer,CategorySerializer
+from .serializers import ProductSerializer,CategorySerializer,OrderSerializer
 import numpy as np
 import json
 import os
 import uuid
 import csv
 
+#_________________________________________Order Apis________________________________________________________
+@csrf_exempt
+@api_view(['GET'])
+def single_order_detail(request, order_id):
+    single_order = Order.objects.get(id=order_id)
+    product_list_in_order = single_order.orderproduct_set.all()
+
+    order_summary = []
+    for single_product in product_list_in_order:
+        product_id = single_product.product.id
+        product_name = single_product.product.name
+        quantity = single_product.quantity
+        price = single_product.product.price
+        product_image = single_product.product.image
+        total = quantity * price
+
+        # Corrected customer info access
+        customer_name = single_order.customer.username
+        customer_phone = single_order.customer.phone
+        customer_email = single_order.customer.email
+        customer_address = single_order.customer.address
+        customer_payment_method = single_order.payment_method
+
+        # Create customer_info dictionary
+        customer_info = {
+            'customer_name': customer_name,
+            'customer_phone': customer_phone,
+            'customer_email': customer_email,
+            'customer_address': customer_address,
+            'customer_payment_method': customer_payment_method
+        }
+
+        product_summary = {
+            "product_id": product_id,
+            "product_name": product_name,
+            "quantity": quantity,
+            "price": price,
+            "image": product_image,
+            "total": total,
+            "customer_info": customer_info  # Add customer_info to product_summary
+        }
+        order_summary.append(product_summary)
+
+    return Response(order_summary)
+
+
+@api_view(['POST'])
+def store_order(request):
+    if request.method == 'POST':
+        data = request.data  # Assuming the JSON data is sent in the request body
+        
+        # Extract customer ID from the request data
+        customer_id = data.get('customer_id')
+        
+        # Retrieve the customer object
+        customer = get_object_or_404(Customer, pk=customer_id)
+        
+        # Extract order data from the request
+        order_data = data.get('order_data')
+        
+        # Create a new order for the customer
+        order = Order.objects.create(customer=customer)
+        
+        # Iterate over each item in the order data
+        for item_data in order_data:
+            product_id = item_data.get('id')
+            quantity = item_data.get('quantity')
+            
+            # Retrieve the product object
+            product = get_object_or_404(Product, pk=product_id)
+            
+            # Create an OrderProduct object for the product in the order
+            OrderProduct.objects.create(order=order, product=product, quantity=quantity)
+        
+        # Return a JSON response indicating success
+        return Response({'message': 'Order placed successfully!',"order_id":order.id}, status=status.HTTP_201_CREATED)
+    
+    # Handle other request methods or invalid requests
+    return Response({'error': 'Invalid request method or data provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@csrf_exempt
+@api_view(['GET'])
+def list_orders(request):
+    orders = Order.objects.all() 
+    serializer = OrderSerializer(orders, many=True)
+    for i in serializer.data:
+        
+        # print(Customer.objects.get(id=i["customer"]))
+        i["customer_name"]= Customer.objects.get(id=i["customer"]).username
+    print(serializer.data)
+    return Response(serializer.data)
 
 
 
+#_________________________________________ML Apis________________________________________________________
 
 def download_dataset_as_csv(request):
     # Get the dataset queryset
@@ -50,6 +146,7 @@ def list_models(request):
     models = Prediction_Model.objects.all()
     models =  [ {"product_name": model.product.name, "model_name" : model.name,"available" : bool(model.model_path) } for model in models]
     return JsonResponse({'available_models': models})
+
 
 
 #_________________________________________Product Apis________________________________________________________
@@ -170,32 +267,6 @@ def update_product(request, product_id):
 
 
 
-# update an existing product api
-# @api_view(["PUT"])
-# def update_product(request, product_id):
-#     print(request.data)
-#     print(product_id,'i am inside')
-#     try:
-#         product = Product.objects.get(pk=product_id)
-#         print(product,'is the prodduct')
-#     except Product.DoesNotExist:
-#         return Response({'error': 'Product not found.'}, status=status.HTTP_404_NOT_FOUND)
-    
-#     if 'image' in request.data:
-#         image_file = request.data['image']
-#         unique_filename = str(uuid.uuid4()) + os.path.splitext(image_file.name)[-1]
-#         image_url = save_profile_pic(image_file, f"profile_pics/{unique_filename}")
-#         request.data['image'] = image_url
-
-        
-    
-#     serializer = ProductSerializer(product, data=request.data)
-    
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response(serializer.data)
-    
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # delete a product api
 @api_view(['DELETE'])
@@ -294,9 +365,48 @@ def delete_category(request, pk):
 
 
 
+#______________________________________________Recommendation api_____________________________
+
+def user_recommendations(request, user_id):
+    # Get the user based on user_id
+    user_target = get_object_or_404(Customer, id=user_id)
+
+    # Get all interactions of the given user
+    user_interactions = Interaction.objects.filter(customer=user_target, purchased=True)
+
+    # Get other users who have purchased the same products
+    similar_users_interactions = Interaction.objects.filter(
+        product__in=user_interactions.values_list('product', flat=True),
+        purchased=True
+    ).exclude(customer=user_target)
+
+    # Count occurrences of interactions by customer
+    similar_users_counts = similar_users_interactions.values('customer').annotate(count=Count('id'))
+
+    # Sort similar users by the number of common purchases
+    similar_users_counts = similar_users_counts.order_by('-count')
+
+    # Extract user ids from similar users
+    similar_user_ids = [item['customer'] for item in similar_users_counts]
+
+    # Get the top 5 similar users
+    top_similar_users = similar_user_ids[:5]
+
+    # Generate recommendations based on top similar users
+    recommendations = []
+    for similar_user_id in top_similar_users:
+        similar_user = Customer.objects.get(id=similar_user_id)
+        similar_user_interactions = Interaction.objects.filter(customer=similar_user, purchased=True)
+
+        for interaction in similar_user_interactions:
+            # Check if the product is not purchased by the target user
+            if not Interaction.objects.filter(customer=user_target, product=interaction.product, purchased=True).exists():
+                productData =ProductSerializer(interaction.product)
+                recommendations.append(productData.data)
 
 
 
+    return JsonResponse({'recommended_products': recommendations})
 
 
 

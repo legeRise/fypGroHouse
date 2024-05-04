@@ -13,6 +13,13 @@ urlpatterns = [
     path('add_product/', views.add_product, name='add_product'),
     path('update_product/<str:product_id>', views.update_product, name='update_product'),
     path('delete_product/<str:product_id>', views.delete_product, name='delete_product'),
+    path('show_recommendations/<str:user_id>/',views.user_recommendations,name='show_recommendation'),
+
+
+    #orders apis
+    path('all_orders/', views.list_orders, name='all_orders'),
+    path('store_order/', views.store_order, name='store_order'),
+    path('single_order_detail/<str:order_id>', views.single_order_detail, name='single_order_detail'),
 
 
 

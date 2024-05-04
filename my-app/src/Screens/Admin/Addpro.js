@@ -1,5 +1,5 @@
 import React, { useState,useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Dimensions,Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Camera from 'expo-camera';
@@ -7,11 +7,15 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeIcon from '../../Components/HomeIcon';
 import UserContext from '../../Contexts/UserContext';
+import ShowAlert from '../../Components/ShowAlert';
+import { useNavigation } from '@react-navigation/native';
+
 
 const windowWidth = Dimensions.get('window').width;
 
 export default function Addpro() {
       const { baseUrl }  = useContext(UserContext)
+      const nav = useNavigation()
   
   // const [id, setId] = useState(new Date().getTime());
   const [name, setName] = useState('');
@@ -23,22 +27,59 @@ export default function Addpro() {
   const [categories, setCategories ]= useState(['']);
 
 
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     try {
+  //       const response = await fetch(`${baseUrl}/products/all_categories`);
+  //       const data = await response.json();
+  //       console.log("i am data in 31 addpro.js",data)
+  //       const categoryNames = data.map((item) => item.name);
+  //       console.log(categoryNames);
+  //       setCategories(categoryNames);
+  //     } catch (error) {
+  //       Alert.alert(
+  //         'Error',
+  //         'Please Add a category first',
+  //         [{ text: 'OK', onPress: () => nav.navigate('Addcat') }]
+  //         // Assuming 'AddCategoryScreen' is the name of the screen you want to navigate to
+  //     );
+
+  //       // console.error('Error fetching categories:', error);
+  //       // Handle error, show error message, etc.
+  //     }
+  //   };
+
+  //   fetchCategories(); // Call the fetchCategories function when the component mounts
+  // }, []);
+
   useEffect(() => {
     const fetchCategories = async () => {
-      try {
-        const response = await fetch(`${baseUrl}/products/all_categories`);
-        const data = await response.json();
-        const categoryNames = data.map((item) => item.name);
-        console.log(categoryNames);
-        setCategories(categoryNames);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-        // Handle error, show error message, etc.
-      }
+        try {
+            const response = await fetch(`${baseUrl}/products/all_categories`);
+            const data = await response.json();
+            console.log("i am data in 31 addpro.js", data);
+            if (data.length !== 0) {
+            const categoryNames = data.map((item) => item.name);
+            console.log(categoryNames);
+            setCategories(categoryNames);
+            }
+            else {
+              Alert.alert(
+                'Error',
+                'Please add a category first',
+                [{ text: 'OK', onPress: () => nav.navigate('Addcat') }]
+                // Assuming 'Addcat' is the name of the screen you want to navigate to
+            );
+            }
+        } catch (error) {
+            console.log(error)
+        }
     };
 
     fetchCategories(); // Call the fetchCategories function when the component mounts
-  }, []);
+}, []);
+
+
 
   const handleCategoryChange = (item) => {
     setSelectedCategory(item.value);

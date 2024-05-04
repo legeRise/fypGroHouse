@@ -24,6 +24,7 @@ const CategoryFlatlist = ({ route }) => {
       keyExtractor={(item, index) => index.toString()} // Key extractor for each item
       renderItem={({ item, index }) => (
         <TouchableOpacity
+        
           onPress={() => {
             nav.navigate("Details", {
               main: item,

@@ -15,6 +15,7 @@ import { addToCart } from "../../Redux/CartSlice";
 
 const ProductfFatlist = ({data}) => {
   const nav = useNavigation();
+  console.log(data,'18 is the ')
  
  
   return (
@@ -43,7 +44,7 @@ const ProductfFatlist = ({data}) => {
           >
             <Image
               style={{ height: 100, resizeMode: "contain" }}
-              source={{ uri: item.img }}
+              source={{ uri: item.image }}
             />
             <View
               style={{ paddingHorizontal: 10, gap: 3, alignItems: "center" }}

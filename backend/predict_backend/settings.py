@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'grocery_app.apps.GroceryAppConfig',
     'rest_framework',
-    'auth_app'
+    'miniapp'
+
 
 ]
 
@@ -158,5 +159,5 @@ AWS_S3_REGION_NAME= os.getenv("AWS_S3_REGION_NAME")
 
 
 
-AUTH_USER_MODEL = 'auth_app.User'
+
 

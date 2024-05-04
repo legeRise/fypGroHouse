@@ -1,10 +1,11 @@
 import { View, Text, FlatList, Image, TouchableOpacity } from "react-native";
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect,useContext } from "react";
 import { myColors } from "../../Utils/myColors";
 import Fruits from "../../Components/Fruits";
 import { useNavigation } from "@react-navigation/native";
 import HomeSearch from "../../Components/HomeSearch";
 import CatLayout from "../../Components/CatLayout";
+import UserContext from "../../Contexts/UserContext";
 
 const Category = () => {
   const navigation = useNavigation();
@@ -13,12 +14,15 @@ const Category = () => {
   const [products, setProducts] = useState([])
 
 
+  const { baseUrl } = useContext(UserContext)
+
+
 
   useEffect(() => {
     // Define the function to fetch data
     const fetchData = async () => {
       try {
-        const response = await fetch('http://192.168.221.249:9200/products/all_categories/'); // Replace with your API endpoint
+        const response = await fetch(`${baseUrl}/products/all_categories/`); // Replace with your API endpoint
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -43,7 +47,7 @@ const Category = () => {
 
   const handleCategoryPress = (item) => {
      
-    fetch(`http://192.168.221.249:9200/products/list_category_products/${item.id}`) // Replace with your API endpoint
+    fetch(`${baseUrl}/products/list_category_products/${item.id}`) // Replace with your API endpoint
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');

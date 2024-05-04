@@ -27,6 +27,7 @@ const Payment = ({ route }) => {
       address,
       paymentOption,
     });
+    console.log(order,"this is ordre")
   };
 
   const renderPaymentOptionInput = () => {

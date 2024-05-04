@@ -24,7 +24,9 @@ LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
 const Details = ({ route }) => {
   const nav=useNavigation()
   const dispatch = useDispatch();
-  const productData = route.params?.products;
+  const productData = route.params?.main;
+  console.log(route)
+  console.log(productData)
   const { name, price, pieces, image } = productData;
   
   return (

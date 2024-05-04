@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   TouchableRipple,
 } from "react-native";
-import React,{useEffect,useContext} from "react";
+import React,{useEffect,useContext,useState} from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -19,10 +19,44 @@ import { useNavigation } from '@react-navigation/native';
 const Profile = () => {
   
   const nav = useNavigation()
-  const { setToken,baseUrl } = useContext(UserContext)
+  const { setToken,baseUrl,setCustomerId,customerId } = useContext(UserContext)
+  const [ profileData, setProfileData ]  = useState(null)
+  
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`http://192.168.134.135:9200/auth/get_profile/${customerId}/`);
+          if (!response.ok) {
+            console.log("not ok")   
+            throw new Error('Network response was not ok');
+          }
+          const jsonData = await response.json();
+          // console.log("response is kk ok")
+          setProfileData(jsonData);
+          console.log(jsonData); // Log the data to the console
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+  
+      fetchData();
+  
+      // Clean-up function if needed
+      return () => {
+        // any clean-up code goes here
+      };
+    }, []); // Empty dependency array to run effect only once on mount
+  
 
   const handleLogout = () => {
+
+    console.log(customerId)
+    setCustomerId("")
     nav.navigate("Login"); // Navigate to the "Login" screen
+  }
+
+  const handleEditProfile = () => {
+    nav.navigate("Editscreen",{profileData:profileData}); // Navigate to the "Login" screen
   }
     
   
@@ -60,7 +94,9 @@ const Profile = () => {
               marginTop: 10,
             }}
           >
-            <Text style={styles.title}>Jawad Ahmad</Text>
+            {/* <Text style={styles.title}>{profileData.username}</Text> */}
+            <Text style={styles.title}>{profileData ? profileData.username : "Loading..."}</Text>
+
           </View>
         </View>
       </View>
@@ -69,19 +105,19 @@ const Profile = () => {
         <View style={styles.row}>
         <MaterialCommunityIcons name="map-marker-radius" size={20} color="#777777" />
           <Text style={{ color: "#777777", marginLeft: 20 }}>
-            Attock, Pakistan
+            {profileData ? profileData.address : "Loading..."}
           </Text>
         </View>
         <View style={styles.row}>
         <MaterialCommunityIcons name="phone" size={20} color="#777777" />
           <Text style={{ color: "#777777", marginLeft: 20 }}>
-            +92-3005398069
+            {profileData ? profileData.phone : "Loading..."}
           </Text>
         </View>
         <View style={[styles.row, { paddingBottom: 30 }]}>
         <MaterialIcons name="email" size={20} color="#777777" />
           <Text style={{ color: "#777777", marginLeft: 20 }}>
-            jawadahmat351@gmail.com
+          {profileData ? profileData.email : "Loading..."}
           </Text>
         </View>
         <View style={styles.infoBoxWrapper}>
@@ -129,8 +165,8 @@ const Profile = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => {}}>
-            <View onPress={() => {}} style={styles.menuItem}>
+            onPress={handleEditProfile}>
+            <View  style={styles.menuItem}>
             <FontAwesome5 name="user-edit" size={20} color="#FF6347"  style={{marginRight: 15}} />
               <Text>Edit Profile</Text>
             </View>

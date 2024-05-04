@@ -86,25 +86,19 @@ const Signup = () => {
     }
   
     // Construct object with all fields
-    const userDetails = {
-      "username": username,
-      "email": email,
-      "password": password,
-      "confirm_password": confirm,
-      "phone": phone,
-      "address": address
-    };
-    setUserInfo(userDetails)
-  
-    // Create object with only required fields for registration
     const registrationData = {
       "username": username,
       "password": password,
-      "confirm": confirm
+      "confirm": confirm,
+      "email": email,
+      "phone": phone,
+      "address": address
     };
-  
+
+    console.log(registrationData)
     // Send registration data to the API
-    fetch('https://habib92.pythonanywhere.com/api/signup/', {
+    console.log(`${baseUrl}/auth/signup/`)
+    fetch(`${baseUrl}/auth/signup/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -113,9 +107,9 @@ const Signup = () => {
     })
     .then(response => {
       if (response.ok) {
-        console.log( response.json())
+          return response.json()
       } else {
-        console.log(response.json())
+        throw new Error('Registration failed');
       }
     })
     .then(data => {

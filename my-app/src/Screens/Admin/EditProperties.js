@@ -7,11 +7,13 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeIcon from '../../Components/HomeIcon';
 import UserContext from '../../Contexts/UserContext';
+import { useNavigation } from '@react-navigation/native';
+
 
 const windowWidth = Dimensions.get('window').width;
 
 export default function EditProperties( {route} ) {
-
+ const nav = useNavigation()
   const { item } = route.params
   const { baseUrl } = useContext(UserContext)
   // const [id, setId] = useState(new Date().getTime());
@@ -81,10 +83,12 @@ export default function EditProperties( {route} ) {
       if (!response.ok) {
         throw new Error('Failed to update product');
       }
+
       return response.json();
     })
     .then(data => {
       console.log('Product updated successfully:', data);
+      navigator.navi
       // Optionally, you can perform any additional actions here after successful addition
     })
     .catch(error => {

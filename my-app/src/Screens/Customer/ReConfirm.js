@@ -1,11 +1,17 @@
-import React from 'react';
+import React,{useState,useContext} from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeIcon from '../../Components/HomeIcon';
+import UserContext from '../../Contexts/UserContext';
+
+
+
 
 const ReConfirm = ({ route, navigation }) => {
+  const { customerId,baseUrl } = useContext(UserContext)
   const { order, name, phoneNumber, email, city, address, paymentOption } = route.params;
+  console.log(route.params)
 
   const expressDeliveryFee = 30.0;
 
@@ -66,17 +72,49 @@ const ReConfirm = ({ route, navigation }) => {
 
   // Pass all information to the Final screen
   const handleConfirmOrder = () => {
-    navigation.navigate('Final', { 
-      orderNumber, 
-      order, 
-      name, 
-      phoneNumber, 
-      email, 
-      city, 
-      address, 
-      paymentOption 
+
+
+      const apiUrl = `${baseUrl}/products/store_order/`;
+      const customer_id = customerId;
+
+      order_data = []
+      order.forEach(product => {
+        const productId = product.id;
+        const quantity = product.quantity;
+        console.log(`Product ID: ${productId}, Quantity: ${quantity}`);
+         order_data.push({ "id": productId, "quantity": quantity });
     });
+  
+    fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          customer_id: customer_id,
+          order_data: order_data
+      })
+  })
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Failed to place order.');
+      }
+      // Parse response body as JSON
+      return response.json();
+  })
+  .then(data => {
+      // Assuming the order ID is returned in the response
+      const orderId = data.order_id;
+      console.log('Order placed successfully! Order ID:', orderId);
+      navigation.navigate("Final",{ orderNumber: orderId });
+  })
+  .catch(error => {
+      console.error('Error:', error);
+  });
+  
   };
+  
+ 
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 16, paddingHorizontal: 15, backgroundColor: "#ebeef3" }}>

@@ -22,7 +22,7 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const { baseUrl,token,setUserInfo }  = useContext(UserContext)
+  const { baseUrl,token,setUserInfo,setCustomerId }  = useContext(UserContext)
 
 
 
@@ -31,61 +31,6 @@ const Login = () => {
   const nav=useNavigation()
 
 
-//   // email : email,
-//   const handleLogin = () => {
-//     user_credentials = {
-//       "username" : username,
-//       "password" : password
-//     }
-    
-//     fetch("https://habib92.pythonanywhere.com/api/login/", {
-//   method: 'POST',
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-//   body: JSON.stringify(user_credentials)
-// })
-// .then(response => {
-//   if (!response.ok) {
-//     throw new Error('Login failed'); // Throw an error if response is not okay
-//   }
-//   return response.json(); // Parse response body as JSON
-// })
-// .then(data => {
-//   console.log('Login successful:', data);
-//   setUserInfo(data.info)
-//   nav.navigate("Tabs"); // Navigate after successful login
-// })
-// .catch(error => {
-//   console.error('Error logging in:', error);
-//   // Handle errors or display error message to the user
-// });
-// //     fetch(`${baseUrl}/auth/login/`, {
-// //   method: 'POST',
-// //   headers: {
-// //     'Content-Type': 'application/json',
-// //     'X-CSRFToken': token,
-// //   },
-// //   body: JSON.stringify(user_credentials)
-// // })
-// // .then(response => {
-// //   if (!response.ok) {
-// //     throw new Error('Login failed'); // Throw an error if response is not okay
-// //   }
-// //   return response.json(); // Parse response body as JSON
-// // })
-// // .then(data => {
-// //   console.log('Login successful:', data);
-// //   setUserInfo(data.info)
-// //   nav.navigate("Tabs"); // Navigate after successful login
-// // })
-// // .catch(error => {
-// //   console.error('Error logging in:', error);
-// //   // Handle errors or display error message to the user
-// // });
-
-
-//   }
 
 const handleLogin = () => {
   // Check if username and password are provided
@@ -101,7 +46,7 @@ const handleLogin = () => {
   };
 
   // Send login data to the API
-  fetch("https://habib92.pythonanywhere.com/api/login/", {
+  fetch(`${baseUrl}/auth/login/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -116,8 +61,11 @@ const handleLogin = () => {
   })
   .then(data => {
     console.log('Login successful:', data);
+    console.log('user logged in with id: ',data.customer_id)
+    setCustomerId(data.customer_id)
+
     showAlert('Login successful');
-    setUserInfo(data.info);
+    // setUserInfo(data.info);
     nav.navigate("Tabs"); // Navigate after successful login
   })
   .catch(error => {

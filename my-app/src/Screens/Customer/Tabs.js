@@ -52,7 +52,7 @@ const Tabs = () => {
       headerShown: false,
       tabBarStyle: { backgroundColor: '#2eb24b' }, // Light green color
         tabBarLabelStyle: { fontWeight: 'bold', color: 'white', fontSize: 12, marginBottom: 5 },
-    }}
+    }} 
     >
       <Tab.Screen
         name="Home"

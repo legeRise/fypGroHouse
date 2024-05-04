@@ -1,4 +1,5 @@
 import pickle
+import requests  # required to download dataset
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -79,3 +80,69 @@ def split_dataset_by_product(dataset):
     return data_location
 
 
+
+def download_dataset():
+    # Assuming the API endpoint is /export_to_csv/
+    api_url = "http://192.168.134.135:9200/products/export_to_csv/"
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        print("done")
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    #     # Parse JSON response to get download link
+    #     json_response = response.json()
+    #     download_link = json_response.get("download_link")
+        
+    #     if download_link:
+    #         # Download dataset from the obtained link
+    #         dataset_response = requests.get(download_link)
+    #         if dataset_response.status_code == 200:
+    #             # Assuming you have a specific directory to save the dataset
+    #             dataset_path = os.path.join(settings.MEDIA_ROOT, 'dataset.csv')
+    #             with open(dataset_path, 'wb') as f:
+    #                 f.write(dataset_response.content)
+    #             print("Dataset downloaded successfully.")
+    #         else:
+    #             print("Failed to download dataset from the provided link.")
+    #     else:
+    #         print("Download link not found in the response.")
+    # else:
+    #     print("Failed to fetch dataset. API request failed.")
+    # # Assuming the API endpoint is /export_to_csv/
+    # api_url = "http://192.168.134.135:9200/products/export_to_csv/"
+    # response = requests.get(api_url)
+    # if response.status_code == 200:
+    #     # Parse JSON response to get download link
+    #     json_response = response.json()
+    #     download_link = json_response.get("download_link")
+        
+    #     if download_link:
+    #         # Download dataset from the obtained link
+    #         dataset_response = requests.get(download_link)
+    #         if dataset_response.status_code == 200:
+    #             # Assuming you have a specific directory to save the dataset
+    #             dataset_path = os.path.join(settings.MEDIA_ROOT, 'dataset.csv')
+    #         else:
+    #             print("Failed to download dataset from the provided link.")
+    #             return None
+    #     else:
+    #         print("Download link not found in the response.")
+    #         return None
+    # else:
+    #     print("Failed to fetch dataset. API request failed.")
+    #     return None

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <form method="post" action="signup" name="user_form" onsubmit="return checks()">  
+        {% csrf_token %}
+        <input  name="username" placeholder="username" required>  <br>
+        <input name="password" placeholder="password" required>  <br>
+        <input name="confirm" placeholder="confirm" required>  <br></br>
+        <div id="validationMessage" style="color: red;" ></div>
+        <button type="submit">Sign Up</button> <br>
+        Alredy a Member, Click to <a href='login'>Login</a>
+    </form>
+    
+    <br></br>
+    <h2> {{ status }} </h2>
+
+<script>
+function checks() {
+
+    var username = document.forms['user_form']['username'].value
+    var password = document.forms['user_form']['password'].value
+    var confirm = document.forms['user_form']['confirm'].value
+    var checker = document.getElementById('validationMessage')
+
+    if(username === "" || password===""  || confirm ==="" )
+    {
+           checker.innerHTML ="All fields must be filled"
+    }
+
+    else if(username.length <5 )
+    {
+           checker.innerHTML ="username must be at least 5 characters"
+    }
+    else if(!/\d/.test(username) )
+    {
+           checker.innerHTML ="username must contain a number"
+    }
+    else if (password != confirm)
+    {
+        checker.innerHTML = "Password and Confirm Password Should be Same"
+    }
+
+    else if (password.length <5)
+    {
+        checker.innerHTML = "Password should contain at least 5 characters"
+    }
+    else {
+        checker.innerHTML = ""
+        return true
+    }
+ return false
+}
+
+
+</script>
+
+
+</body>
+</html>

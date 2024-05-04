@@ -1,8 +1,9 @@
 
 from grocery_app.models import Dataset,Product,Prediction_Model
 from django.conf import settings
-from grocery_app.helper_functions import split_dataset_by_product,preprocess_and_train,save_model
+from grocery_app.helper_functions import split_dataset_by_product,preprocess_and_train,save_model,download_dataset
 import os
+
 
 def add_new_data():
     all_products = Product.objects.all()
@@ -14,7 +15,9 @@ def add_new_data():
 
 
 def periodic_model_trainer():
+    download_dataset()
     dataset = os.path.join(settings.MEDIA_ROOT,'dataset.csv')
+    print('dataset 20 jobs.py')
     csv_file_paths = split_dataset_by_product(dataset)
     for product_name,csv_file in csv_file_paths.items():
         print(product_name,csv_file)

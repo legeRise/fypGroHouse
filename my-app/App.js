@@ -68,33 +68,13 @@ const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
     
-const { setToken } = useContext(UserContext)
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const response = await fetch('http://192.168.221.249:9200/auth/secret_token');
-        if (!response.ok) {
-          throw new Error('Failed to fetch token');
-        }
-        const data = await response.json();
-        const token = data.token; // Assuming the response contains a JSON object with a 'token' property
-        console.log(data.token); // Assuming the response contains a JSON object with a 'token' property
-        setToken(token);
-      } catch (error) {
-        console.error('Error fetching token:', error);
-      }
-    };
-  
-    fetchToken(); // Call the fetchToken function when the component mounts
-  }, []);
 
 
   return (
     <Provider store={Store}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Login"
+          initialRouteName="Splash"
           screenOptions={{
             headerShown: false,
           }}

@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect,useContext } from "react";
 import { View, Text, FlatList, Image, TouchableOpacity, TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,6 +8,9 @@ import { addToCart } from "../../../Redux/CartSlice";
 import { responsiveWidth } from "react-native-responsive-dimensions";
 import { Feather } from "@expo/vector-icons"; // Import Feather icon
 import HomeIcon from "../../Components/HomeIcon";
+import UserContext from "../../Contexts/UserContext";
+
+
 
 
 const SearchResult = () => {
@@ -16,14 +19,16 @@ const SearchResult = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [products, setProducts] = useState([]);
+
+  const { baseUrl }  = useContext(UserContext)
   
 
-
+  
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://192.168.221.249:9200/products/all_products');
+      const response = await fetch(`${baseUrl}/products/all_products`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

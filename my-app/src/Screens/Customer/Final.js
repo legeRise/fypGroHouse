@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
 const Final = ({ route, navigation }) => {
-  const { orderNumber, order, name, phoneNumber, email, city, address, paymentOption } = route.params;
+  const { orderNumber } = route.params;
 
   const handleBackToHomePress = () => {
     clearCart(); // Clear cart data
     console.log("Cart Cleared"); // Debugging
-    navigation.navigate('Home'); // Navigate to the Home screen
+    navigation.navigate('Tabs'); // Navigate to the Home screen
   };
 
   const clearCart = () => {
@@ -48,9 +48,7 @@ const Final = ({ route, navigation }) => {
 
       {/* No need to display customer and payment information */}
 
-      <TouchableOpacity style={styles.button} onPress={passDataToOrderList}>
-        <Text style={styles.buttonText}>Ok</Text>
-      </TouchableOpacity>
+
 
       <TouchableOpacity style={styles.button} onPress={handleBackToHomePress}>
         <Text style={styles.buttonText}>Back to Home</Text>
