@@ -23,7 +23,7 @@ import Meat from "./src/Components/Meat";
 import Dairy from "./src/Components/Dairy";
 import CategoryFlatlist from "./src/Components/CategoryFlatlist";
 import Products from "./src/Screens/Customer/Products";
-import Stock from "./src/Screens/Admin/Stock";
+
 
 import { useContext,useEffect,useState } from 'react';
 import Forgotpass from "./src/Screens/Customer/Forgotpass";
@@ -57,6 +57,7 @@ import Final from "./src/Screens/Customer/Final";
 import OrderList from "./src/Screens/Admin/OrderList";
 import OrderDeatail from "./src/Screens/Admin/OrderDeatail";
 import UserContext from './src/Contexts/UserContext';
+
 
 
 const Stack = createNativeStackNavigator();
@@ -97,7 +98,6 @@ const AppNavigator = () => {
           <Stack.Screen name="Dairy" component={Dairy} />
           <Stack.Screen name="CategoryFlatlist" component={CategoryFlatlist} />
           <Stack.Screen name="Products" component={Products} />
-          <Stack.Screen name="Stock" component={Stock} />
           <Stack.Screen name="Ott" component={Ott}/>
           <Stack.Screen name="Reset" component={Reset}/>
           <Stack.Screen name="Editscreen" component={Editscreen}/>
@@ -127,6 +127,7 @@ const AppNavigator = () => {
           <Stack.Screen name="Final" component={Final} />
           <Stack.Screen name="OrderList" component={OrderList} />
           <Stack.Screen name="OrderDeatail" component={OrderDeatail} />
+
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

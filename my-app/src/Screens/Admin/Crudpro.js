@@ -20,6 +20,7 @@ const Crudpro = () => {
       .then(response => response.json())
       .then(data => {
         nav.navigate('Viewpro', { productList: data });
+        
       })
       .catch(error => {
         console.error('Error fetching product list:', error);

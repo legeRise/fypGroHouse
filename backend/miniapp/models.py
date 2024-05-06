@@ -16,7 +16,4 @@ class Customer(models.Model):
         return self.username  # Display the username when printing a Customer object
 
     
-    
 
-    def __str__(self):
-        return self.username

@@ -112,6 +112,39 @@ def list_orders(request):
 
 
 
+@csrf_exempt
+@api_view(['GET'])
+def approve_order(request,order_id,total_amount):
+    print(total_amount,order_id,'118---------118')
+
+    order = Order.objects.get(id=order_id)
+    order.approved =True
+    print("total in database ",order.total,"total after approval",total_amount)
+    order.total = total_amount
+    order.save()
+
+    # update the stock levels
+    for order_product in order.orderproduct_set.all():
+        print(order.orderproduct_set.all(),"this is the line 127")
+        product = order_product.product
+        print(product)
+        quantity_sold = order_product.quantity
+        print(type(quantity_sold),'from order ')
+        print(type(product.stock_sold),'stock_sold')
+        # Update stock_sold and current_stock for the product
+        print(product.stock_sold,'before')
+        product.stock_sold =  product.stock_sold + quantity_sold
+        print(product.stock_sold, 'after')
+        print(product.current_stock, 'before')
+        product.current_stock -= quantity_sold
+        print(product.current_stock, 'after')
+        product.save()
+
+
+    return Response({"order_id":order_id,"message": "order approved" , "approved": True})
+
+
+
 #_________________________________________ML Apis________________________________________________________
 
 def download_dataset_as_csv(request):
@@ -144,7 +177,8 @@ def download_dataset_as_csv(request):
 @csrf_exempt
 def list_models(request):
     models = Prediction_Model.objects.all()
-    models =  [ {"product_name": model.product.name, "model_name" : model.name,"available" : bool(model.model_path) } for model in models]
+
+    models =  [ {"model_id":model.id,"product_name": model.product.name, "model_name" : model.name,"available" : bool(model.model_path) } for model in models]
     return JsonResponse({'available_models': models})
 
 
@@ -408,8 +442,20 @@ def user_recommendations(request, user_id):
 
     return JsonResponse({'recommended_products': recommendations})
 
+    
 
 
+def best_sellings(request):
+    # Retrieve top 5 best-selling products with positive stock_sold, ordered by stock_sold in descending order
+    top_products = Product.objects.filter(stock_sold__gt=0).order_by('-stock_sold')[:5]
+    
+    # Serialize the top products using the ProductSerializer
+    serializer = ProductSerializer(top_products, many=True)
+    
+    # Extract serialized data from the serializer
+    best_selling_products = serializer.data
+    
+    return JsonResponse({"best_selling_products": best_selling_products})
 
 
 
@@ -435,6 +481,96 @@ def user_recommendations(request, user_id):
 
 
 #__________________________________Model apis_________________________________________________________
+
+
+# @csrf_exempt
+# def predict(request, model_id):
+#     try:
+#         product_model = Prediction_Model.objects.get(id=model_id)
+#     except Prediction_Model.DoesNotExist:
+#         return JsonResponse({'error': f"The Product with the ID '{model_id}' does not exist", 'model_exists': False}, status=404)
+
+#     if not product_model.model_path:
+#         return JsonResponse({'error': f"Model for ID '{model_id}' is not trained yet", 'model_exists': False}, status=404)
+#     else:
+#         model_file = load_model(name=product_model.name, path=product_model.model_path)
+
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         price = data.get('price')
+#         period = data.get('time_period')
+#         time_period = {'daily': 1, 'weekly': 7, 'monthly': 30}
+
+#         model = model_file[product_model.name]
+#         exog = list(np.array([price]).reshape(1, -1)) * time_period[period]
+#         prediction = model.forecast(steps=time_period[period], exog=exog)
+#         return JsonResponse({'expected_sales': int(prediction.sum()), 'model_exists': True})
+
+#     return JsonResponse({'message': 'Method Not Allowed'}, safe=False)
+# @csrf_exempt
+# def predict(request, product_id):
+#     try:
+#         product = Product.objects.get(id=product_id)
+#     except Product.DoesNotExist:
+#         return JsonResponse({'error': f"The Product with the ID '{product_id}' does not exist", 'model_exists': False}, status=404)
+
+#     try:
+#         product_model = Prediction_Model.objects.get(product=product)
+#         print(product_model, 'is in predict at 520')
+#     except Prediction_Model.DoesNotExist:
+#         return JsonResponse({'error': f"No prediction model found for the product '{product.name}'", 'model_exists': False}, status=404)
+
+#     if not product_model.model_path:
+#         return JsonResponse({'error': f"Model for product '{product.name}' is not trained yet", 'model_exists': False}, status=404)
+#     else:
+#         model_file = load_model(name=product_model.name, path=product_model.model_path)
+
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         price = data.get('price')
+#         period = data.get('time_period')
+#         time_period = {'daily': 1, 'weekly': 7, 'monthly': 30}
+
+#         model = model_file[product_model.name]
+#         exog = list(np.array([price]).reshape(1, -1)) * time_period[period]
+#         prediction = model.forecast(steps=time_period[period], exog=exog)
+#         # Prediction.objects.all()
+#         return JsonResponse({'expected_sales': int(prediction.sum()), 'model_exists': True})
+
+#     return JsonResponse({'message': 'Method Not Allowed'}, safe=False)
+
+# @csrf_exempt
+# def predict(request, model_name):
+#     model_name =model_name.lower()
+#     print(model_name,'is the name')
+#     try:
+#         product_model =Prediction_Model.objects.get(name = f"{model_name}_model")
+#         print(product_model,'548 in predict')
+#     except Exception as e:
+#         return JsonResponse({'error': f"The Product with the name '{model_name}' does not exist",'model_exists':False}, status=404)
+
+#     print(product_model,'testing')
+#     if not product_model.model_path:
+#         return JsonResponse({'error': f"Model for '{model_name}' is not trained yet",'model_exists':False}, status=404)
+#     else:
+#         model_file= load_model(name = model_name, path = product_model.model_path)
+#         print(model_file)
+
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+        
+#         price = data.get('price')
+#         period = data.get('time_period')
+#         time_period = {'daily': 1, 'weekly': 7, 'monthly': 30}
+
+#         model = model_file[model_name]
+#         exog = list(np.array([price]).reshape(1, -1)) * time_period[period]
+#         prediction = model.forecast(steps=time_period[period], exog=exog)
+#         return JsonResponse({'expected_sales': int(prediction.sum()),'model_exists':True})
+    
+#     return JsonResponse({'message': 'Method Not Allowed'},safe=False)
+
+
 
 @csrf_exempt
 def predict(request, model_name):
@@ -465,8 +601,6 @@ def predict(request, model_name):
         return JsonResponse({'expected_sales': int(prediction.sum()),'model_exists':True})
     
     return JsonResponse({'message': 'Method Not Allowed'},safe=False)
-
-
 
 
 @csrf_exempt

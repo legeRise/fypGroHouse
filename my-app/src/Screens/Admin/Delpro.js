@@ -52,6 +52,7 @@ const Delpro = () => {
     })
     .then(data => {
       console.log('Product Deleted successfully:', data);
+      Alert.alert("Success","Product Deleted Successfully")
       // Optionally, you can perform any additional actions here after successful addition
     })
     .catch(error => {

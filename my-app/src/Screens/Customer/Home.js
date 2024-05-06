@@ -11,6 +11,7 @@ import { fruits } from "../../Utils/Data";
 import { useNavigation } from "@react-navigation/native";
 import Category from "./Category";
 import UserContext from "../../Contexts/UserContext";
+import Bestsell from "../../Components/Bestsell";
 
 
 
@@ -19,6 +20,7 @@ const Home = () => {
 
   const { baseUrl,customerId } = useContext(UserContext)
   const [ recommendedProducts,setRecommendedProducts ] = useState("")
+  const [ bestSelling,setBestSellingProducts ] = useState("")
   const nav=useNavigation()
 
   
@@ -43,6 +45,30 @@ const Home = () => {
     recommendedProducts(); // Call the function here
   }, []); // Empty dependency array since this effect runs only once
   
+  
+
+
+  useEffect(() => {
+    const bestSelling = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/products/best_sellings/`);
+        if (!response.ok) {
+          console.log("not ok");   
+          throw new Error('Network response was not ok');
+        }
+        const jsonData = await response.json();
+        console.log(jsonData.best_selling_products)
+        setBestSellingProducts(jsonData.best_selling_products);
+        // setTotalOrders(jsonData.total_orders);
+        console.log(jsonData); // Log the data to the console
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    bestSelling(); // Call the function here
+  }, []); // Empty dependency array since this effect runs only once
+  
 
 
   return (
@@ -63,7 +89,7 @@ const Home = () => {
           <ExclusiveProduct title="Exclusive Offer" />
           <ProductfFatlist data={fruits} />
           <ExclusiveProduct title="Best Selling" />
-          <ProductfFatlist data={fruits}/>
+          <ProductfFatlist data={bestSelling}/>
           <ExclusiveProduct title="Recommended" />
           <ProductfFatlist data={recommendedProducts}/>
         </View>

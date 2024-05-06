@@ -22,10 +22,12 @@ class Category(models.Model):
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100,blank=False)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField()
     price = models.IntegerField(blank=False)
-    stock = models.IntegerField(blank=False)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    unit = models.CharField(max_length=250,blank=False,default=None)
+    current_stock = models.IntegerField(blank=False,default=0)
+    stock_sold = models.IntegerField(blank=False,default=0)
     image = models.CharField(max_length=250,blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -48,6 +50,9 @@ class Order(models.Model):
 
     payment_method = models.CharField(max_length=30, choices=PAYMENT_CHOICES,default='Cash on Delivery')
     order_date = models.DateTimeField(default=timezone.now)
+    approved = models.BooleanField(default=False)
+    total = models.IntegerField(default=0)
+
 
     def __str__(self):
         return f"Order Placed by Customer {self.customer.username} and order id is {self.id}"
@@ -100,6 +105,7 @@ class Prediction_Model(models.Model):
 class Dataset(models.Model):
     date = models.DateField(auto_now_add=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    # id_of_product= models.IntegerField(default=0)
     price = models.IntegerField()
     sales = models.IntegerField()
     product_name = models.CharField(max_length=100, blank=True)
@@ -114,7 +120,16 @@ class Dataset(models.Model):
     
 
 
+class Prediction(models.Model):
+    TIME_PERIOD_CHOICES = [
+        ('weekly', 'Weekly'),
+        ('monthly', 'Monthly'),
+    ]
 
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    prediction_date = models.DateTimeField(auto_now_add=True)
+    time_period = models.CharField(max_length=10, choices=TIME_PERIOD_CHOICES)
+    predicted_value = models.FloatField() 
 
 
 

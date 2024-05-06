@@ -1,4 +1,5 @@
 import React,{ useContext, useEffect,useState } from "react";
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import Chart from "../../Components/Chart";
 import HomeIcon from "../../Components/HomeIcon";
@@ -9,35 +10,72 @@ import Bestsell from "../../Components/Bestsell";
 import UserContext from "../../Contexts/UserContext";
 
 const Dashboard = () => {
-  const { baseUrl } = useContext(UserContext)
+  const { baseUrl,active } = useContext(UserContext)
   const [totalCustomers, setTotalCustomers ] = useState("")
   const [totalOrders, setTotalOrders ] = useState("")
+  const [totalSales, setTotalSales ] = useState("")
+  const [ bestSelling,setBestSellingProducts ] = useState("")
+
+
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${baseUrl}/auth/dashboard/`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const jsonData = await response.json();
+      setTotalCustomers(jsonData.total_customers);
+      setTotalOrders(jsonData.total_orders);
+      setTotalSales(jsonData.total_sales);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${baseUrl}/auth/dashboard/`);
-        if (!response.ok) {
-          console.log("not ok")   
-          throw new Error('Network response was not ok');
-        }
-        const jsonData = await response.json();
-        // console.log("response is kk ok")
-        setTotalCustomers(jsonData.total_customers);
-        setTotalOrders(jsonData.total_orders);
-        console.log(jsonData); // Log the data to the console
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
     fetchData();
 
     // Clean-up function if needed
     return () => {
       // any clean-up code goes here
     };
-  }, []); // Empty dependency array to run effect only once on mount
+  }, []); // Empty dependency array ensures useEffect runs only once when component mounts
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData(); // Call fetchData when screen is focused
+    }, [])
+  );
+
+
+
+
+  useEffect(() => {
+    const bestSelling = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/products/best_sellings/`);
+        if (!response.ok) {
+          console.log("not ok");   
+          throw new Error('Network response was not ok');
+        }
+        const jsonData = await response.json();
+        console.log(jsonData.best_selling_products)
+        setBestSellingProducts(jsonData.best_selling_products);
+        // setTotalOrders(jsonData.total_orders);
+        console.log(jsonData); // Log the data to the console
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    bestSelling(); // Call the function here
+  }, []); // Empty dependency array since this effect runs only once
+  
+
+
+
+
 
 
 
@@ -54,7 +92,7 @@ const Dashboard = () => {
             {/* First Column */}
             <View style={[styles.column, {backgroundColor: 'white', borderColor: 'purple', borderWidth: 2}]}>
               <Text style={styles.title}>Total Sale</Text>
-              <Text style={styles.value}>Rs 20,000</Text>
+              <Text style={styles.value}>{totalSales}</Text>
             </View>
             {/* Second Column */}
             <View style={[styles.column, {backgroundColor: 'white', borderColor: 'red', borderWidth: 2}]}>
@@ -79,7 +117,7 @@ const Dashboard = () => {
         <Chart />
         <View style={{marginTop:40,gap:25,paddingBottom:20}}>
         <ExclusiveProduct title="Best Selling" />
-        <Bestsell data={fruits} />
+        <Bestsell data={bestSelling} />
         </View>
        
       </ScrollView>

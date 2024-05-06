@@ -105,6 +105,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'; // Import Expo's AntDesign and MaterialCommunityIcons
 import { useNavigation } from '@react-navigation/native';
 import UserContext from '../../Contexts/UserContext'
+import { useFocusEffect } from '@react-navigation/native';
 import HomeIcon from '../../Components/HomeIcon';
 import HomeSearch from '../../Components/HomeSearch';
 
@@ -115,9 +116,7 @@ const Updatecat = () => {
    const nav= useNavigation(); // Initialize navigation object
 
 
-  
-   useEffect(() => {
-    const fetchCategories = async () => {
+  const fetchCategories = async () => {
       try {
         const response = await fetch(`${baseUrl}/products/all_categories`);
         const data = await response.json();
@@ -130,8 +129,33 @@ const Updatecat = () => {
       }
     };
 
-    fetchCategories(); 
-  }, []);
+ 
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/products/all_products`);
+        const data = await response.json();
+        const productList = data.map((item) => item);
+        setProducts(productList);
+      } catch (error) {
+        console.error('Error fetching Products:', error);
+        // Handle error, show error message, etc.
+      }
+    };
+  
+    useEffect(() => {
+      fetchProducts();
+  
+      // Clean-up function if needed
+      return () => {
+        // any clean-up code goes here
+      };
+    }, []); // Empty dependency array ensures useEffect runs only once when component mounts
+  
+    useFocusEffect(
+      React.useCallback(() => {
+        fetchCategories(); // Call fetchProducts when screen is focused
+      }, [])
+    );
 
 
   const handleEditCategory = (item) => {

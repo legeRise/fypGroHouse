@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,31 +15,75 @@ import { myColors } from "../../Utils/myColors";
 import Rating from "../../Components/Rate";
 import DropDownPicker from "react-native-dropdown-picker";
 import { PieChart } from "react-native-chart-kit";
+import UserContext from "../../Contexts/UserContext";
 
 const ProDetail = ({ route, navigation }) => {
   const dispatch = useDispatch();
+  console.log("i am proDetail.js")
   const { productData } = route.params;
-  const { name, price, stock, image,description,category } = productData;
+  const { id, name, price, stock, image, description, category } = productData;
+  const { baseUrl } = useContext(UserContext);
 
+  console.log("this is the productData in ProDetail", productData);
   // State variables for selected year and month
   const [selectedYear, setSelectedYear] = useState("2023");
-  const [selectedMonth, setSelectedMonth] = useState("January");
+  const [selectedMonth, setSelectedMonth] = useState("Monthly");
+  const [predictedStock, setPredictedStock] = useState(0);
+  console.log(productData.stock_sold)
+  const [actualStock, setActualStock] = useState(productData.stock_sold);
+   console.log("hmmm 34 ")
+  useEffect(() => {
+    // Do nothing if price or selectedMonth is not set yet
+    if (!price || !selectedMonth) return;
 
+    const data = {
+      price,
+      time_period: selectedMonth.toLowerCase(),
+    };
+
+    // Make the POST request
+    fetch(`${baseUrl}/products/model/${name}_model/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data,'i am the data 54')
+        if (data.expected_sales) {
+        // Set the predicted sales in state
+        console.log(data, "the response from model");
+
+        setPredictedStock(data.expected_sales);
+        }
+        else{
+          console.log("Model not trained yet")
+
+        }
+        // Assuming you have actual stock data coming from somewhere, update actual stock here
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, [price, selectedMonth]);
+ console.log(' hmm 71')
   // Data for the pie chart
+  console.log(predictedStock," this is the predicted stock required")
   const pieChartData = [
     {
       name: "Predicted Stock",
-      predicted: 500,
-      actual: 300,
+      value: predictedStock,
       color: "#2eb24b", // Green color for predicted stock
     },
     {
       name: "Actual Stock",
-      actual: 300,
-      predicted: 500,
+      value: actualStock,
       color: "#ff6347", // Red color for actual stock
     },
   ];
+  console.log("this ")
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -61,11 +105,11 @@ const ProDetail = ({ route, navigation }) => {
               fontSize: 20,
               color: myColors.third,
               fontWeight: "700",
-              marginTop : 15,
+              marginTop: 15,
               marginBottom: 1,
             }}
           >
-             {name.charAt(0).toUpperCase() + name.slice(1)}
+            {name.charAt(0).toUpperCase() + name.slice(1)}
           </Text>
           <Text
             style={{
@@ -76,7 +120,7 @@ const ProDetail = ({ route, navigation }) => {
               marginBottom: 10,
             }}
           >
-            Price: {price} PKR {'\n'}Available Stock: {stock}
+            Price: {price} PKR {"\n"}Available Stock: {stock}
           </Text>
           <Text style={{ fontSize: 20, fontWeight: "bold", color: "black", marginBottom: 10 }}>Description</Text>
           <Text style={{ fontSize: 16, color: "grey", marginBottom: 10 }}>
@@ -86,10 +130,10 @@ const ProDetail = ({ route, navigation }) => {
             Category: {category}
           </Text>
           <Rating />
-          
+
           <View style={{ marginTop: 50 }}>
             {/* Year Dropdown */}
-            <DropDownPicker
+            {/* <DropDownPicker
               items={[
                 { label: "2023", value: "2023" },
                 { label: "2024", value: "2024" },
@@ -102,22 +146,12 @@ const ProDetail = ({ route, navigation }) => {
               }}
               dropDownStyle={{ backgroundColor: "#fafafa" }}
               onChangeItem={(item) => setSelectedYear(item.value)}
-            />
+            /> */}
             {/* Month Dropdown */}
             <DropDownPicker
               items={[
-                { label: "January", value: "January" },
-                { label: "February", value: "February" },
-                { label: "March", value: "March" },
-                { label: "April", value: "April" },
-                { label: "May", value: "May" },
-                { label: "June", value: "June" },
-                { label: "July", value: "July" },
-                { label: "August", value: "August" },
-                { label: "September", value: "September" },
-                { label: "October", value: "October" },
-                { label: "November", value: "November" },
-                { label: "December", value: "December" },
+                { label: "Weekly", value: "Weekly" },
+                { label: "Monthly", value: "Monthly" },
               ]}
               defaultValue={selectedMonth}
               containerStyle={{ height: 40, marginBottom: 20 }}
@@ -143,13 +177,12 @@ const ProDetail = ({ route, navigation }) => {
       borderRadius: 16,
     },
   }}
-  accessor="actual"
+  accessor="value" // Change this to "value"
   backgroundColor="transparent"
   paddingLeft="15"
   absolute
-  // Add renderLabel prop for custom labels
   renderLabel={({ data, dataIndex }) => {
-    return `${data[dataIndex].name}: ${data[dataIndex].actual}`;
+    return `${data[dataIndex].name}: ${data[dataIndex].value}`;
   }}
 />
 

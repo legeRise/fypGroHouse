@@ -4,11 +4,10 @@ import UserContext from "./UserContext";
 const UserContextProvider = ({children}) => {
     const [baseUrl, setBaseUrl] = React.useState("http://192.168.134.135:9200")
     const [ customerId, setCustomerId] = React.useState("")
-    // const [token, setToken] = React.useState("")
-    // const [userInfo, setUserInfo] = React.useState("")
+    const [active, setActive] = React.useState(false);
 
     return(
-        <UserContext.Provider value={{baseUrl, setBaseUrl,customerId,setCustomerId}}>
+        <UserContext.Provider value={{baseUrl, setBaseUrl,customerId,setCustomerId,active, setActive}}>
         {children}
         </UserContext.Provider>
     )

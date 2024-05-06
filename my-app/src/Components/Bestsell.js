@@ -39,7 +39,7 @@ const Bestsell = ({data}) => {
           >
             <Image
               style={{ height: 100, resizeMode: "contain" }}
-              source={{ uri: item.img }}
+              source={{ uri: item.image }}
             />
             <View
               style={{ paddingHorizontal: 10, gap: 3, alignItems: "center" }}

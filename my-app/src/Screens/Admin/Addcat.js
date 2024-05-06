@@ -1,5 +1,5 @@
 import React, { useContext, useState,useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Dimensions,Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Camera from 'expo-camera';
@@ -7,6 +7,8 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeIcon from '../../Components/HomeIcon';
 import UserContext from '../../Contexts/UserContext';
+import { useNavigation } from '@react-navigation/native';
+
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -48,6 +50,8 @@ export default function Addcat() {
     })
     .then(data => {
       console.log('Category added successfully:', data);
+      Alert.alert("Success","Category Added Successfully")
+  
       // Optionally, you can perform any additional actions here after successful addition
     })
     .catch(error => {

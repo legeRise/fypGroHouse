@@ -16,7 +16,7 @@ import Dairy from "../../Components/Dairy";
 import Vegetables from "../../Components/Vegetables";
 import Meat from "../../Components/Meat";
 import Products from "./Products";
-import Stock from "../Admin/Stock";
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -35,7 +35,6 @@ const HomeStack = () => {
       <Stack.Screen name="Vegetables" component={Vegetables} />
       <Stack.Screen name="Meat" component={Meat} />
       <Stack.Screen name="Profile" component={Profile}/>
-      <Stack.Screen name="Stock" component={Stock}/>
       <Stack.Screen name="Products" component={Products}/>
     
 

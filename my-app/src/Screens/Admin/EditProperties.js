@@ -1,5 +1,5 @@
 import React, { useState,useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Dimensions,Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Camera from 'expo-camera';
@@ -8,7 +8,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeIcon from '../../Components/HomeIcon';
 import UserContext from '../../Contexts/UserContext';
 import { useNavigation } from '@react-navigation/native';
-
+import { ScrollView } from 'react-native';
+import { current } from '@reduxjs/toolkit';
+// import { useFocusEffect } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -18,17 +20,17 @@ export default function EditProperties( {route} ) {
   const { baseUrl } = useContext(UserContext)
   // const [id, setId] = useState(new Date().getTime());
   const [name, setName] = useState(item.name);
-  const [description, setDescription] = useState(item.description);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [description, setDescription] = useState(item.description);
   const [price, setPrice] = useState(item.price.toString())
-  const [stock, setStock] = useState(item.stock.toString());
+  const [unit, setUnit] = useState(item.unit);
   const [image, setImage] = useState(item.image);
+  const [stock, setStock] = useState("")
   const [categories, setCategories ]= useState(['']);
 
 
 
-  useEffect(() => {
-    const fetchCategories = async () => {
+  const fetchCategories = async () => {
       try {
         const response = await fetch(`${baseUrl}/products/all_categories`);
         const data = await response.json();
@@ -41,26 +43,46 @@ export default function EditProperties( {route} ) {
       }
     };
 
-    fetchCategories(); // Call the fetchCategories function when the component mounts
-  }, []);
+
+
+  useEffect(() => {
+    fetchCategories();
+
+    // Clean-up function if needed
+    return () => {
+      // any clean-up code goes here
+    };
+  }, []); // Empty dependency array ensures useEffect runs only once when component mounts
+
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     fetchCategories(); // Call fetchProducts when screen is focused
+  //   }, [])
+  // );
+
+
+
 
   const handleCategoryChange = (item) => {
     setSelectedCategory(item.value);
   };
 
+
   const handleUpdateProduct = () => {
     console.log('what is the id of the product?',item.id)
+    added_stock = parseInt(stock) + parseInt(item.current_stock)
+
 
     // Create a new FormData object
     const formData = new FormData();
   
     // Append the data fields to the FormData object
     formData.append('name', name);
-    formData.append('description', description);
-    // console.log("this is the selectedCategory",selectedCategory,"nd this is ",item.category)
     formData.append('category', selectedCategory ? selectedCategory : item.category)
+    formData.append('description', description);
     formData.append('price', price);
-    formData.append('stock', stock);
+    formData.append('unit', unit);
+    formData.append('current_stock',added_stock);
     
     // Append the image file to the FormData object
     formData.append('image', {
@@ -82,13 +104,14 @@ export default function EditProperties( {route} ) {
       console.log(response)
       if (!response.ok) {
         throw new Error('Failed to update product');
+        Alert.alert("Error","Failed to Update Product")
       }
 
       return response.json();
     })
     .then(data => {
       console.log('Product updated successfully:', data);
-      navigator.navi
+      Alert.alert("Success","Product Updated Successfully")
       // Optionally, you can perform any additional actions here after successful addition
     })
     .catch(error => {
@@ -98,7 +121,7 @@ export default function EditProperties( {route} ) {
    };
   
 
-  const requestCameraPermission = async () => {
+ const requestCameraPermission = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
     if (status !== 'granted') {
       alert('Sorry, we need camera permissions to make this work!');
@@ -146,6 +169,7 @@ export default function EditProperties( {route} ) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView>
       <View style={{marginBottom:50 }}>
         <HomeIcon />
       </View>
@@ -156,10 +180,9 @@ export default function EditProperties( {route} ) {
         value={id.toString()}
         onChangeText={setId}
       /> */}
-
+<Text style={styles.label}>Product Name</Text>
       <TextInput
         style={styles.input}
-        placeholder="Name"
         value={name}
         onChangeText={setName}
       />
@@ -172,27 +195,48 @@ export default function EditProperties( {route} ) {
   placeholder="Select category"
   onChangeItem={handleCategoryChange}
 />
+<Text style={styles.label}>Description</Text>
       <TextInput
         style={styles.input}
-        placeholder="Description"
+        
         value={description}
         onChangeText={setDescription}
       />
+      <Text style={styles.label}>Price</Text>
       <TextInput
         style={styles.input}
-        placeholder="Price"
+        
         keyboardType="numeric"
         value={price}
         onChangeText={setPrice}
       />
-
+<Text style={styles.label}>Unit</Text>
       <TextInput
         style={styles.input}
-        placeholder="Available Stock"
-        keyboardType="numeric"
+        value={unit}
+        onChangeText={setUnit}
+      />
+      <View style={{alignItems:"center",marginTop:10,marginBottom:20}}>
+        <Text style={{color:"black",fontSize: 20,fontWeight:"bold" }}>Stock Management</Text>
+      </View>
+      <View style={{flexDirection:"row",justifyContent:"space-between",marginTop:10,marginBottom:20}}>
+        <Text style={{color:"black",fontSize: 16,fontWeight:"bold"}}>Current Stock</Text>
+        <Text>{item.current_stock}</Text>
+        </View>
+       
+      <View style={{flexDirection:"row",justifyContent:"space-between",marginTop:10,marginBottom:20}}>
+        <Text style={{color:"black",fontSize: 16,fontWeight:"bold"}}>Stock Sold</Text>
+        <Text>{item.stock_sold}</Text>
+        </View>
+        <Text style={styles.label}>Add Stock</Text>
+      <TextInput
+        style={styles.input}
+        // keyboardType="numeric"
         value={stock}
         onChangeText={setStock}
       />
+      
+      
       <View style={styles.cameraContainer}>
         <TouchableOpacity style={styles.cameraIcon} onPress={takePhoto}>
           <Feather name="camera" size={24} color="gray" />
@@ -211,6 +255,7 @@ export default function EditProperties( {route} ) {
       <View style={styles.borderBox}>
         {image && <Image source={{ uri: image }} style={styles.imageInBorder} />}
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -263,6 +308,11 @@ const styles = StyleSheet.create({
   },
   dropDown: {
     backgroundColor: '#fafafa',
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
   imageBox: {
     borderWidth: 2,

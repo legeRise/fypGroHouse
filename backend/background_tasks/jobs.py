@@ -10,7 +10,7 @@ def add_new_data():
     for product in all_products:
 
         print('Total Products',len(all_products))
-        new_data =Dataset(product=product,price=product.price,sales=200) 
+        new_data =Dataset(product=product,price=product.price,sales=product.stock_sold) 
         new_data.save()
 
 
@@ -34,7 +34,3 @@ def periodic_model_trainer():
 
 
     
-
-
-
-

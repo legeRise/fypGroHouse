@@ -22,7 +22,7 @@ export default function Addpro() {
   const [description, setDescription] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [price, setPrice] = useState('');
-  const [stock, setStock] = useState('');
+  const [unit, setUnit] = useState('');
   const [image, setImage] = useState('');
   const [categories, setCategories ]= useState(['']);
 
@@ -93,10 +93,10 @@ export default function Addpro() {
   
     // Append the data fields to the FormData object
     formData.append('name', name);
-    formData.append('description', description);
     formData.append('category', selectedCategory);
+    formData.append('description', description);
     formData.append('price', price);
-    formData.append('stock', stock);
+    formData.append('unit', unit);
     
     // Append the image file to the FormData object
     formData.append('image', {
@@ -121,6 +121,8 @@ export default function Addpro() {
     })
     .then(data => {
       console.log('Product added successfully:', data);
+      Alert.alert("Success","Product Added Successfully")
+
       // Optionally, you can perform any additional actions here after successful addition
     })
     .catch(error => {
@@ -220,10 +222,9 @@ export default function Addpro() {
 
       <TextInput
         style={styles.input}
-        placeholder="Available Stock"
-        keyboardType="numeric"
-        value={stock}
-        onChangeText={setStock}
+        placeholder="Unit"
+        value={unit}
+        onChangeText={setUnit}
       />
       <View style={styles.cameraContainer}>
         <TouchableOpacity style={styles.cameraIcon} onPress={takePhoto}>

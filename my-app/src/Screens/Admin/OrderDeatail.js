@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity,Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeIcon from '../../Components/HomeIcon';
 import UserContext from '../../Contexts/UserContext';
+import { useNavigation } from '@react-navigation/native';
+
 
 const OrderDeatail = ({ route }) => {
+  const nav = useNavigation("OrderList")
+
   console.log(route.params, 'is 999 route');
   const { orderSummary } = route.params;
+  const { orderId } = route.params;
   console.log(orderSummary, 'in orderdetail 9');
 
   const { baseUrl } = useContext(UserContext);
@@ -39,6 +44,44 @@ const OrderDeatail = ({ route }) => {
     </View>
   );
 
+
+
+  const handleApprove = async (totalAmount) => {
+    try {
+      // Make GET request to the endpoint
+      const response = await fetch(`${baseUrl}/products/approve_order/${orderId}/${totalAmount}`);
+      // Check if the request was successful
+      if (response.ok) {
+        // Parse the response JSON
+        const data = await response.json();
+        // Set the response data in state
+        console.log(data,'after approve')
+        if(data.approved){
+          Alert.alert(
+            "Message",
+            "Order Approved",
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  // Navigate to the desired screen
+                  nav.navigate("OrderList");
+                },
+              },
+            ],
+            { cancelable: false }
+          );
+        }
+      } else {
+        // If request fails, throw an error
+        throw new Error('Failed to fetch data');
+      }
+    } catch (error) {
+      // Handle errors, for example, log them
+      console.error('Error fetching data:', error.message);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <HomeIcon />
@@ -67,7 +110,7 @@ const OrderDeatail = ({ route }) => {
         </View>
       </View>
       <View style={styles.confirmButtonContainer}>
-        <TouchableOpacity style={styles.confirmButton}>
+        <TouchableOpacity style={styles.confirmButton} onPress={() => handleApprove(totalAmount)}>
           <Text style={styles.confirmButtonText}>Approve Order</Text>
         </TouchableOpacity>
       </View>

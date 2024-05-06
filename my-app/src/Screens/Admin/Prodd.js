@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import UserContext from '../../Contexts/UserContext';
 
 const Prodd = () => {
   const nav=useNavigation()
+
+  const { baseUrl } = useContext(UserContext)
+
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={() => nav.navigate('Crudpro')}>
@@ -11,9 +16,6 @@ const Prodd = () => {
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => nav.navigate('Crudcat')} >
         <Text style={styles.buttonText}>Categories</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Stock</Text>
       </TouchableOpacity>
     </View>
   );

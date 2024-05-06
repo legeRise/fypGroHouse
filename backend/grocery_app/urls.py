@@ -14,10 +14,12 @@ urlpatterns = [
     path('update_product/<str:product_id>', views.update_product, name='update_product'),
     path('delete_product/<str:product_id>', views.delete_product, name='delete_product'),
     path('show_recommendations/<str:user_id>/',views.user_recommendations,name='show_recommendation'),
+    path('best_sellings/',views.best_sellings,name='best_sellings'),
 
 
     #orders apis
     path('all_orders/', views.list_orders, name='all_orders'),
+    path('approve_order/<str:order_id>/<str:total_amount>/', views.approve_order, name='all_ordersupdate'),
     path('store_order/', views.store_order, name='store_order'),
     path('single_order_detail/<str:order_id>', views.single_order_detail, name='single_order_detail'),
 
@@ -39,5 +41,7 @@ urlpatterns = [
     path('update_dataset/', views.dataset_updater, name='dataset_updater'),
     
     # prediction
+    # path('model/<str:product_id>/predict', views.predict, name='predict'),
     path('model/<str:model_name>_model/', views.predict, name='predict'),
+
 ]

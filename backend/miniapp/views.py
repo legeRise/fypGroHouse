@@ -102,12 +102,16 @@ def total_customers(request):
 def dashboard_details(request):
     total_customers = len(Customer.objects.all())
     total_orders = len(Order.objects.all())
+    for i in Order.objects.all():
+        print(i.approved)
+    total_sales = sum([order.total for order in Order.objects.all() if order.approved])
+    print(total_sales)
     
 
     # total_sales =  
     #total_sales = 234
     #total_Expenses = 234
-    return JsonResponse({"total_customers" :total_customers, "total_orders":total_orders})
+    return JsonResponse({"total_customers" :total_customers, "total_orders":total_orders,"total_sales":total_sales})
 
 # pricce  --- time - --sales-  sales  ---prr
 
