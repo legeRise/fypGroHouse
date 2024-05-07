@@ -25,7 +25,7 @@ export default function EditProperties( {route} ) {
   const [price, setPrice] = useState(item.price.toString())
   const [unit, setUnit] = useState(item.unit);
   const [image, setImage] = useState(item.image);
-  const [stock, setStock] = useState("")
+  const [stock, setStock] = useState(0)
   const [categories, setCategories ]= useState(['']);
 
 
@@ -70,7 +70,9 @@ export default function EditProperties( {route} ) {
 
   const handleUpdateProduct = () => {
     console.log('what is the id of the product?',item.id)
+    console.log('what is the id of the product?',item.id)
     added_stock = parseInt(stock) + parseInt(item.current_stock)
+
 
 
     // Create a new FormData object
@@ -231,7 +233,7 @@ export default function EditProperties( {route} ) {
         <Text style={styles.label}>Add Stock</Text>
       <TextInput
         style={styles.input}
-        // keyboardType="numeric"
+        keyboardType="numeric"
         value={stock}
         onChangeText={setStock}
       />

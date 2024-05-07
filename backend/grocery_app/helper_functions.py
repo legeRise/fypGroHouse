@@ -83,7 +83,7 @@ def split_dataset_by_product(dataset):
 
 def download_dataset():
     # Assuming the API endpoint is /export_to_csv/
-    api_url = "http://192.168.134.135:9200/products/export_to_csv/"
+    api_url = settings.DOWNLOAD_URL
     response = requests.get(api_url)
     if response.status_code == 200:
         print("done")

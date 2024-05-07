@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Splash from "./src/Screens/Customer/Splash";
 import Signup from "./src/Screens/Customer/Signup";
@@ -60,6 +60,7 @@ import UserContext from './src/Contexts/UserContext';
 
 
 
+
 const Stack = createNativeStackNavigator();
 
 
@@ -68,7 +69,7 @@ const Stack = createNativeStackNavigator();
 
 
 const AppNavigator = () => {
-    
+
 
 
   return (

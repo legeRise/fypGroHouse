@@ -87,7 +87,11 @@ def get_profile(request,customer_id):
     
     # Use customer_id instead of id to retrieve the Customer object
     user_profile = Customer.objects.get(id=customer_id)
-    context = {"username": user_profile.username, "email": user_profile.email, "phone" : user_profile.phone, "address":user_profile.address}
+    total_orders  =  len(user_profile.order_set.all())
+    total_spent = sum([order.total for order in user_profile.order_set.all()])
+    print("total orders  were",total_orders)
+    print("total spent till now: ",total_spent)
+    context = {"username": user_profile.username, "email": user_profile.email, "phone" : user_profile.phone, "address":user_profile.address,"total_orders":total_orders,"total_spent":total_spent}
     return JsonResponse(context)
 
     
@@ -102,6 +106,7 @@ def total_customers(request):
 def dashboard_details(request):
     total_customers = len(Customer.objects.all())
     total_orders = len(Order.objects.all())
+    approved_orders = len(Order.objects.filter(approved=True))
     for i in Order.objects.all():
         print(i.approved)
     total_sales = sum([order.total for order in Order.objects.all() if order.approved])
@@ -111,7 +116,7 @@ def dashboard_details(request):
     # total_sales =  
     #total_sales = 234
     #total_Expenses = 234
-    return JsonResponse({"total_customers" :total_customers, "total_orders":total_orders,"total_sales":total_sales})
+    return JsonResponse({"total_customers" :total_customers, "total_orders":total_orders,"total_sales":total_sales,"approved_orders":approved_orders})
 
 # pricce  --- time - --sales-  sales  ---prr
 

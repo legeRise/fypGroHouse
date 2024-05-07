@@ -47,11 +47,11 @@ const OrderList = () => {
       };
     }, []); // Empty dependency array ensures useEffect runs only once when component mounts
   
-    // useFocusEffect(
-    //   React.useCallback(() => {
-    //     fetchData(); // Call fetchProducts when screen is focused
-    //   }, [])
-    // );
+    useFocusEffect(
+      React.useCallback(() => {
+        fetchData(); // Call fetchProducts when screen is focused
+      }, [])
+    );
 
 
 const handleOrderDetailView = async (item) => {

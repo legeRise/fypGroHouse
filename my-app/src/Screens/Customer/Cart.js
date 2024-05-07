@@ -6,6 +6,7 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  Alert
 } from "react-native";
 import React from "react";
 import { AntDesign } from "@expo/vector-icons";
@@ -177,7 +178,12 @@ const Cart = () => {
       </View>
       <TouchableOpacity
   onPress={() => {
+    if (storeData.length > 0) {
     nav.navigate("Complete", { order: storeData.map(item => ({ ...item, img: item.image })) });
+    }
+    else {
+      Alert.alert("Error","Cart Cannot be Empty")
+    }
   }}
   style={{
     backgroundColor: "#2eb24b",

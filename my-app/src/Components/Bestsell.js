@@ -54,7 +54,7 @@ const Bestsell = ({data}) => {
                 {item.name.charAt(0).toUpperCase() + item.name.slice(1)}
               </Text>
               <Text style={{ color: "grey", fontWeight: "500", fontSize: 14 }}>
-                {item.pieces}
+                {item.unit}
               </Text>
             </View>
             <View style={{ marginTop: 5, alignItems: "center" }}>

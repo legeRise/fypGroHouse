@@ -32,17 +32,15 @@ const Editpro = () => {
   useEffect(() => {
     fetchProducts();
 
-    // Clean-up function if needed
     return () => {
-      // any clean-up code goes here
     };
   }, []); // Empty dependency array ensures useEffect runs only once when component mounts
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     fetchProducts(); // Call fetchProducts when screen is focused
-  //   }, [])
-  // );
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchProducts(); // Call fetchProducts when screen is focused
+    }, [])
+  );
 
  
 

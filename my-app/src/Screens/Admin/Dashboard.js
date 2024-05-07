@@ -10,10 +10,11 @@ import Bestsell from "../../Components/Bestsell";
 import UserContext from "../../Contexts/UserContext";
 
 const Dashboard = () => {
-  const { baseUrl,active } = useContext(UserContext)
+  const { baseUrl } = useContext(UserContext)
   const [totalCustomers, setTotalCustomers ] = useState("")
   const [totalOrders, setTotalOrders ] = useState("")
   const [totalSales, setTotalSales ] = useState("")
+  const [approvedOrders, setApprovedOrders ] = useState("")
   const [ bestSelling,setBestSellingProducts ] = useState("")
 
 
@@ -28,6 +29,7 @@ const Dashboard = () => {
       setTotalCustomers(jsonData.total_customers);
       setTotalOrders(jsonData.total_orders);
       setTotalSales(jsonData.total_sales);
+      setApprovedOrders(jsonData.approved_orders)
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -96,17 +98,18 @@ const Dashboard = () => {
             </View>
             {/* Second Column */}
             <View style={[styles.column, {backgroundColor: 'white', borderColor: 'red', borderWidth: 2}]}>
-              <Text style={styles.title}>Total Expense</Text>
-              <Text style={styles.value}>Rs 15,000</Text>
+              <Text style={styles.title}>Total Orders</Text>
+              <Text style={styles.value}>{totalOrders}</Text>
             </View>
           </View>
           {/* Second Row */}
           <View style={styles.row}>
-            {/* Third Column */}
-            <View style={[styles.column, {backgroundColor: 'white', borderColor: 'green', borderWidth: 2}]}>
-              <Text style={styles.title}>Total Orders</Text>
-              <Text style={styles.value}>{totalOrders}</Text>
+          <View style={[styles.column, {backgroundColor: 'white', borderColor: 'green', borderWidth: 2}]}>
+              <Text style={styles.title}>Approved Orders</Text>
+              <Text style={styles.value}>{approvedOrders}</Text>
             </View>
+            {/* Third Column */}
+
             {/* Fourth Column */}
             <View style={[styles.column, {backgroundColor: 'white', borderColor: 'blue', borderWidth: 2}]}>
               <Text style={styles.title}>Total Customers</Text>

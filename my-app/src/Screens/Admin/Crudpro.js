@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React,{useContext,useState} from 'react'
+import React,{useContext} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import HomeIcon from '../../Components/HomeIcon'
 import { useNavigation } from '@react-navigation/native'
@@ -27,6 +27,9 @@ const Crudpro = () => {
         // Handle error, show error message, etc.
       });
   };
+
+
+  
 
   return (
     <SafeAreaView style={{flex: 1,marginHorizontal:20,marginTop:13}}>

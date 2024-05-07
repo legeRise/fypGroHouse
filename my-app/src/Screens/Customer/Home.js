@@ -18,10 +18,38 @@ import Bestsell from "../../Components/Bestsell";
 
 const Home = () => {
 
-  const { baseUrl,customerId } = useContext(UserContext)
+  const { baseUrl,customerId,isLoggedIn,setCustomerInfo } = useContext(UserContext)
   const [ recommendedProducts,setRecommendedProducts ] = useState("")
   const [ bestSelling,setBestSellingProducts ] = useState("")
   const nav=useNavigation()
+
+
+
+    
+  
+  useEffect(() => {
+    const customer_details = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/auth/get_profile/${customerId}`);
+        if (!response.ok) {
+          console.log("not ok");   
+          throw new Error('Network response was not ok');
+        }
+        const jsonData = await response.json();
+        console.log(jsonData)
+        setCustomerInfo(jsonData);
+        // setTotalOrders(jsonData.total_orders);
+        // console.log(jsonData); // Log the data to the console
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    customer_details(); // Call the function here
+  }, []); // Empty dependency array since this effect runs only once
+  
+
+
 
   
   useEffect(() => {
@@ -86,8 +114,7 @@ const Home = () => {
           <HomeSearch />
           <HomeBanner />
           <Category />
-          <ExclusiveProduct title="Exclusive Offer" />
-          <ProductfFatlist data={fruits} />
+          
           <ExclusiveProduct title="Best Selling" />
           <ProductfFatlist data={bestSelling}/>
           <ExclusiveProduct title="Recommended" />

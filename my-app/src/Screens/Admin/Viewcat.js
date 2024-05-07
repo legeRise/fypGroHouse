@@ -1,17 +1,18 @@
 import React from "react";
+
 import { FlatList, View, Text, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
 import { myColors } from "../../Utils/myColors"; // Adjust the path as needed
 import HomeIcon from "../../Components/HomeIcon";
 import HomeSearch from "../../Components/HomeSearch";
 
-const Viewcat = ( { route } ) => {
-  const { categoryList } = route.params
-  console.log("cat",categoryList)
-  // Sample data for demonstration
 
-  const nav = useNavigation();
+const Viewcat = ({ route }) => {
+
+  const  { categoryList } = route.params
+  console.log("cat",categoryList)
+
+
 
   const handleViewDetail = (item) => {
     // Do nothing when a category is clicked, since there's no navigation

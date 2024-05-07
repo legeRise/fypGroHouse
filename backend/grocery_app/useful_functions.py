@@ -19,3 +19,15 @@ def save_profile_pic(image, destination):
     except Exception as e:
         # Return error if any exception occurs
         return None, str(e)
+    
+
+
+
+def remove_duplicates(input_list, key):
+    unique_ids = set()
+    result = []
+    for item in input_list:
+        if item[key] not in unique_ids:
+            unique_ids.add(item[key])
+            result.append(item)
+    return result

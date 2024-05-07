@@ -160,4 +160,5 @@ AWS_S3_REGION_NAME= os.getenv("AWS_S3_REGION_NAME")
 
 
 
+DOWNLOAD_URL = "http://192.168.68.249:9200/products/export_to_csv/"
 

@@ -6,6 +6,7 @@ import HomeIcon from "../../Components/HomeIcon";
 
 const Complete = ({ navigation, route }) => {
   const { order } = route.params;
+  console.log('is the order--->\n',order,'\n<---is the order')
 
   const expressDeliveryFee = 30.0;
 

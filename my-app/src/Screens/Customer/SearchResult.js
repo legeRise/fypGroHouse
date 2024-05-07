@@ -22,7 +22,7 @@ const SearchResult = () => {
 
   const { baseUrl }  = useContext(UserContext)
   
-
+  console.log(filteredProducts,'are the filtered products')
   
 
   useEffect(() => {
@@ -52,7 +52,8 @@ const SearchResult = () => {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       onPress={() => {
-        nav.navigate("Details", { products: item });
+        console.log("this is the item\n\n",item)
+        nav.navigate("Details", { main: item });
       }}
       activeOpacity={0.7}
       style={{

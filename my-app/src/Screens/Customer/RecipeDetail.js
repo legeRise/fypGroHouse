@@ -10,7 +10,7 @@ const RecipeDetail = ({ route, navigation }) => {
   const { strMeal, strMealThumb, idMeal } = recipe;
   const [ingredients, setIngredients] = useState([]);
   const [instructions, setInstructions] = useState('');
-  const [checkedIngredients, setCheckedIngredients] = useState([]);
+  const [selectedIngredients, setSelectedIngredients] = useState([]);
 
   const fetchRecipeDetails = async () => {
     try {
@@ -22,7 +22,6 @@ const RecipeDetail = ({ route, navigation }) => {
           ingredientsData.push({
             name: meal[`strIngredient${i}`],
             measurement: meal[`strMeasure${i}`],
-            checked: false
           });
         }
       }
@@ -38,9 +37,22 @@ const RecipeDetail = ({ route, navigation }) => {
   }, []);
 
   const toggleIngredient = (index) => {
-    const newIngredients = [...ingredients];
-    newIngredients[index].checked = !newIngredients[index].checked;
-    setIngredients(newIngredients);
+    const newIngredients = [...selectedIngredients];
+    const ingredient = ingredients[index];
+    const selectedIndex = newIngredients.findIndex(item => item.name === ingredient.name);
+    if (selectedIndex === -1) {
+      newIngredients.push(ingredient);
+    } else {
+      newIngredients.splice(selectedIndex, 1);
+    }
+    setSelectedIngredients(newIngredients);
+  };
+
+  const handleBuy = () => {
+    // Pass selected ingredients to the search bar for searching
+    const searchString = selectedIngredients.map(ingredient => ingredient.name).join(', ');
+    // Now you can do something with searchString, such as passing it to the search bar component
+    console.log("Selected Ingredients:", searchString);
   };
 
   return (
@@ -102,14 +114,14 @@ const RecipeDetail = ({ route, navigation }) => {
             <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
               <Text style={{ fontSize: 16 }}>{`${ingredient.name} - ${ingredient.measurement}`}</Text>
               <CheckBox
-                value={ingredient.checked}
+                value={selectedIngredients.some(item => item.name === ingredient.name)}
                 onValueChange={() => toggleIngredient(index)}
                 style={{ alignSelf: 'flex-end' }} // Align CheckBox to the right
               />
             </View>
           ))}
           <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
-            <TouchableOpacity style={{ backgroundColor: 'green', padding: 10, borderRadius: 5 }}>
+            <TouchableOpacity style={{ backgroundColor: 'green', padding: 10, borderRadius: 5 }} onPress={handleBuy}>
               <Text style={{ color: 'white', fontSize: 16 }}>Buy</Text>
             </TouchableOpacity>
           </View>

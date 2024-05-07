@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save,post_delete
 from django.dispatch import receiver
-from .models import Product,Prediction_Model,Order
+from .models import Product,Prediction_Model,Order,OrderProduct
 
 @receiver(post_save,sender=Product)
 def attach_model(sender,instance,created,**kwargs):
@@ -17,3 +17,12 @@ def product_deleted_handler(sender, instance, **kwargs):
     print(orders_with_deleted_product,'orders with deleted products')
     # Delete each order containing the deleted product
     orders_with_deleted_product.delete()
+
+
+# @receiver(post_save,sender=Order)
+# def user_item_interactions(sender,instance,created,**kwargs):
+#     if created:
+#         print(instance)
+#         print(instance.payment_method)
+#         customer_order = instance.orderproduct_set.all()  
+#         print(customer_order,'is customer ordder')

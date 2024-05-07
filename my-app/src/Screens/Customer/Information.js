@@ -7,29 +7,21 @@ import UserContext from '../../Contexts/UserContext';
 
 
 const Information = ({ route }) => {
-  const { userInfo } = useContext(UserContext)
-  console.log(userInfo,'this is info 11')
+  const { customerInfo } = useContext(UserContext)
+  console.log(customerInfo,'this is info 11')
   
   const navigation = useNavigation();
-  const [name, setName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [city, setCity] = useState('');
-  const [address, setAddress] = useState("");
 
-
-  // const [name, setName] = useState(userInfo.username);
-  // const [phoneNumber, setPhoneNumber] = useState(userInfo.phone);
-  // const [email, setEmail] = useState(userInfo.email);
-  // const [city, setCity] = useState('');
-  // const [address, setAddress] = useState(userInfo.address);
+  const [name, setName] = useState(customerInfo.username);
+  const [phoneNumber, setPhoneNumber] = useState(customerInfo.phone);
+  const [email, setEmail] = useState(customerInfo.email);
+  const [address, setAddress] = useState(customerInfo.address);
 
   const handleSubmit = () => {
     navigation.navigate('Payment', {
       name,
       phoneNumber,
       email,
-      city,
       address,
       order: route.params.order, // Pass order data to Payment screen
     });
@@ -65,13 +57,6 @@ const Information = ({ route }) => {
         placeholder="Enter your email"
       />
 
-      <Text style={styles.label}>City</Text>
-      <TextInput
-        style={styles.input}
-        value={city}
-        onChangeText={setCity}
-        placeholder="Enter your city"
-      />
 
       <Text style={styles.label}>Address</Text>
       <TextInput
@@ -117,6 +102,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
+    marginTop : 15
   },
   submitButtonText: {
     color: 'white',

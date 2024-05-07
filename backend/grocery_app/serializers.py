@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product,Category,Order
+from .models import Product,Category,Order,Interaction
 
 
 
@@ -29,5 +29,14 @@ class CategorySerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
+        id = serializers.ReadOnlyField()
+        fields = "__all__"
+
+
+
+
+class InteractionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interaction
         id = serializers.ReadOnlyField()
         fields = "__all__"

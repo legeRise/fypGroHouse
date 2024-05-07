@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView,Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import HomeIcon from '../../Components/HomeIcon';
@@ -8,7 +8,8 @@ const Payment = ({ route }) => {
   const navigation = useNavigation();
 
   // Extracting data from route params
-  const { name, phoneNumber, email, city, address, order } = route.params;
+  const { name, phoneNumber, email, address, order } = route.params;
+  console.log(route.params,'at payment -12 line')
 
   const [paymentOption, setPaymentOption] = useState('');
   const [cardNumber, setCardNumber] = useState('');
@@ -17,17 +18,44 @@ const Payment = ({ route }) => {
   const [mobileNumber, setMobileNumber] = useState(phoneNumber);
 
   const handleConfirmPayment = () => {
-    console.log('Payment confirmed!');
-    navigation.navigate('ReConfirm', {
-      order,
-      name,
-      phoneNumber,
-      email,
-      city,
-      address,
-      paymentOption,
-    });
-    console.log(order,"this is ordre")
+    if (!paymentOption) {
+ 
+      Alert.alert("Error", "Choose a Payment Option");
+    } else if (paymentOption === "creditCard") {
+      // Payment option is credit card
+      if (!cardNumber || !expiryDate || !cvv) {
+
+        Alert.alert("Error", "Please Provide the Payment Details");
+      } else {
+
+        console.log('This "', paymentOption, '" is the selected payment option --------------------------------22 line no payment.js');
+        console.log('Payment confirmed!');
+        navigation.navigate('ReConfirm', {
+          order,
+          name,
+          phoneNumber,
+          email,
+          address,
+          paymentOption,
+        });
+        console.log(order, "this is order");
+      }
+    } else {
+      // Payment option other than credit card selected
+      console.log('This "', paymentOption, '" is the selected payment option --------------------------------22 line no payment.js');
+      console.log('Payment confirmed!');
+      navigation.navigate('ReConfirm', {
+        order,
+        name,
+        phoneNumber,
+        email,
+        address,
+        paymentOption,
+      });
+      console.log(order, "this is order");
+    }
+    
+    
   };
 
   const renderPaymentOptionInput = () => {

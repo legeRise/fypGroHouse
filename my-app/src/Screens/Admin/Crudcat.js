@@ -1,26 +1,28 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React, {useState,useEffect,useContext} from 'react'
+import React, {useContext} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import HomeIcon from '../../Components/HomeIcon'
 import { useNavigation } from '@react-navigation/native'
 import UserContext from '../../Contexts/UserContext'
 const Crudcat = () => {
+
   const { baseUrl }  = useContext(UserContext)
+
   const nav=useNavigation()
 
 
+  
   const handleViewCategory = () => {
     fetch(`${baseUrl}/products/all_categories/`)
       .then(response => response.json())
       .then(data => {
-        nav.navigate('Viewcat', { categoryList: data });
+        nav.navigate('Viewcat',{categoryList: data})
       })
       .catch(error => {
         console.error('Error fetching product list:', error);
         // Handle error, show error message, etc.
       });
   };
-
 
 
 

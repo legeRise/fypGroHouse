@@ -7,25 +7,30 @@ import {
   TouchableRipple,
 } from "react-native";
 import React,{useEffect,useContext,useState} from "react";
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import HomeIcon from "../../Components/HomeIcon";
 import { FontAwesome5 } from '@expo/vector-icons';
 import UserContext from "../../Contexts/UserContext";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../../../Redux/CartSlice";
+
 
 import { useNavigation } from '@react-navigation/native';
 
 const Profile = () => {
   
   const nav = useNavigation()
-  const { setToken,baseUrl,setCustomerId,customerId } = useContext(UserContext)
+  const { setToken,baseUrl,setCustomerId,customerId,setIsLoggedIn } = useContext(UserContext)
   const [ profileData, setProfileData ]  = useState(null)
-  
-    useEffect(() => {
-      const fetchData = async () => {
+  const dispatch = useDispatch();
+
+  const fetchData = async () => {
         try {
-          const response = await fetch(`http://192.168.134.135:9200/auth/get_profile/${customerId}/`);
+          const response = await fetch(`${baseUrl}/auth/get_profile/${customerId}/`);
+          
           if (!response.ok) {
             console.log("not ok")   
             throw new Error('Network response was not ok');
@@ -38,20 +43,38 @@ const Profile = () => {
           console.error('Error fetching data:', error);
         }
       };
+    
   
-      fetchData();
-  
-      // Clean-up function if needed
-      return () => {
-        // any clean-up code goes here
-      };
-    }, []); // Empty dependency array to run effect only once on mount
+
+
+
+  useEffect(() => {
+    fetchData();
+
+    // Clean-up function if needed
+    return () => {
+      // any clean-up code goes here
+    };
+  }, []); // Empty dependency array ensures useEffect runs only once when component mounts
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData(); // Call fetchData when screen is focused
+    }, [])
+  );
+
+
+
+
+
   
 
   const handleLogout = () => {
 
     console.log(customerId)
     setCustomerId("")
+    setIsLoggedIn(false)
+    dispatch(clearCart());
     nav.navigate("Login"); // Navigate to the "Login" screen
   }
 
@@ -127,11 +150,11 @@ const Profile = () => {
               { borderRightColor: "#dddddd", borderRightWidth: 1 },
             ]}
           >
-            <Text>RS. 100</Text>
+            <Text>RS. {profileData ? profileData.total_spent : "Loading..."}</Text>
             <Text>Spend</Text>
           </View>
           <View style={styles.infoBox}>
-            <Text>12</Text>
+            <Text>{profileData ? profileData.total_orders : "Loading..."}</Text>
             <Text>Orders</Text>
           </View>
         </View>
@@ -239,3 +262,4 @@ const styles = StyleSheet.create({
     lineHeight: 26,
   },
 });
+

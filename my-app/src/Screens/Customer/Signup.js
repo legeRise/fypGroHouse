@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { View, Text, ScrollView, Image, TextInput, TouchableOpacity, Alert } from "react-native";
+import React, { useContext, useState,useEffect} from "react";
+import { View, Text, ScrollView, Image, TextInput, TouchableOpacity, Alert,BackHandler } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { myColors } from "../../Utils/myColors";
 import { StatusBar } from "expo-status-bar";
@@ -20,7 +20,16 @@ const Signup = () => {
 
  
 
-    
+  // useEffect(() => {
+  //   const backHandler = BackHandler.addEventListener(
+  //     'hardwareBackPress',
+  //     () => {
+  //       // Perform any additional logic if needed
+  //       return true; // Prevent going back if on the Home screen
+  //     }
+  //   );
+  //   return () => backHandler.remove();
+  // }, []);
 
 
   const [isVisible, setIsVisible] = useState(true);

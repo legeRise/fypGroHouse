@@ -1,5 +1,5 @@
 import React, { useState,useContext } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Dimensions,Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Camera from 'expo-camera';
@@ -15,8 +15,9 @@ export default function Editcat({route}) {
   const { item } = route.params
 
   const { baseUrl } = useContext(UserContext)
+
+
   const [name, setName] = useState(item.name);
-  
   const [image, setImage] = useState(item.image);
 
 
@@ -53,6 +54,7 @@ export default function Editcat({route}) {
     })
     .then(data => {
       console.log('category updated successfully:', data);
+      Alert.alert("Success","Category Updated Successfully!")
       // Optionally, you can perform any additional actions here after successful addition
     })
     .catch(error => {
