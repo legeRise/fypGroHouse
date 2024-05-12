@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import AdminLoginView,CustomerLoginView
+from .views import AdminLoginView,CustomerLoginView,ConfirmEmailView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 
@@ -9,6 +9,7 @@ urlpatterns = [
     path('signup/',views.signup),
     path('login/', CustomerLoginView.as_view(), name='customer_login'),
     path('admin_login/',AdminLoginView.as_view(), name='admin_login'),
+    path('match_otp/',ConfirmEmailView.as_view(), name='email_cofirm'),
 
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # path('admin_login/',views.admin_login),

@@ -3,9 +3,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from django.http import JsonResponse
-from .models import Customer
+from .models import Customer,Confirmation_Code
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.conf import settings
 from grocery_app.models import Order
 from miniapp.serializers import CustomerSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -19,15 +21,19 @@ from datetime import timedelta
 
 
 
+
+
 @csrf_exempt
 @api_view(['POST'])
 def signup(request):
     serializer = CustomerSerializer(data=request.data)
     if serializer.is_valid():
+        print("done")
         serializer.save()
         return Response({'message': 'Registration Successful'}, status=status.HTTP_201_CREATED)
     print('the erros are',serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
@@ -58,7 +64,7 @@ class CustomerLoginView(TokenObtainPairView):
 
         # Authenticate customer user
         user = authenticate(username=username, password=password)
-        if user is not None and  not user.is_superuser:
+        if user is not None and  not user.is_superuser and user.is_active:
             response = super().post(request, *args, **kwargs)   # get access and refresh tokens if user credentials are correct
             return Response(response.data, status=status.HTTP_200_OK)
         else:
@@ -66,6 +72,20 @@ class CustomerLoginView(TokenObtainPairView):
             return Response({'error': 'Invalid customer credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
+
+class ConfirmEmailView(APIView):
+    def post(self, request, format=None):
+        email = request.data.get('email')
+        code = request.data.get('code')
+
+        try:
+            confirmation = Confirmation_Code.objects.get(customer__email=email, code=code)
+            confirmation.customer.is_active = True
+            confirmation.customer.save()
+            confirmation.delete()
+            return Response({'message': 'Email confirmed successfully.'}, status=status.HTTP_200_OK)
+        except Confirmation_Code.DoesNotExist:
+            return Response({'message': 'Invalid confirmation code.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -204,3 +224,4 @@ def edit_profile(request):
 
 def get_total_customers():
     return len(Customer.objects.filter(is_superuser=False))
+

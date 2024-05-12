@@ -41,9 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'grocery_app.apps.GroceryAppConfig',
+    'miniapp.apps.MiniappConfig',
     'rest_framework',
-     'rest_framework_simplejwt',
-    'miniapp'
+    'rest_framework_simplejwt',
+
 
 
 ]
@@ -78,6 +79,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'predict_backend.wsgi.application'
+
+
+# Email Setup
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_ID') 
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
 
 
 # Database
@@ -169,7 +179,11 @@ DOWNLOAD_URL = "http://192.168.59.249:9200/products/export_to_csv/"
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+      'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+    
 }
 
 

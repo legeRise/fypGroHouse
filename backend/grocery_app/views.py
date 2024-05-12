@@ -2,8 +2,9 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser
 from rest_framework import status
 from .useful_functions import remove_duplicates
 from django.conf import settings
@@ -317,6 +318,7 @@ def update_product(request, product_id):
 
 # delete a product api
 @api_view(['DELETE'])
+@permission_classes([IsAdminUser])
 def delete_product(request, product_id):
     try:
         product = Product.objects.get(pk=product_id)

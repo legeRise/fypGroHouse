@@ -24,6 +24,7 @@ from django.urls import path,include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/',include("miniapp.urls")),
+    path('api-auth/',include("rest_framework.urls")),
     path('products/', include('grocery_app.urls')),
 
 ]

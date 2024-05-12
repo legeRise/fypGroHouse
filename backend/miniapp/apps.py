@@ -4,3 +4,7 @@ from django.apps import AppConfig
 class MiniappConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'miniapp'
+
+    def ready(self):
+        import miniapp.signals  # necessary for  signals to work
+
