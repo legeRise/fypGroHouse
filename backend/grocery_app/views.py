@@ -66,37 +66,29 @@ def single_order_detail(request, order_id):
 
 @api_view(['POST'])
 def store_order(request):
-    if request.method == 'POST':
-        data = request.data  # Assuming the JSON data is sent in the request body
-        
-        # Extract customer ID from the request data
-        customer_id = data.get('customer_id')
-        
-        # Retrieve the customer object
-        customer = get_object_or_404(Customer, pk=customer_id)
-        
-        # Extract order data from the request
-        order_data = data.get('order_data')
-        
-        # Create a new order for the customer
-        order = Order.objects.create(customer=customer)
-        
-        # Iterate over each item in the order data
-        for item_data in order_data:
-            product_id = item_data.get('id')
-            quantity = item_data.get('quantity')
-            
-            # Retrieve the product object
-            product = get_object_or_404(Product, pk=product_id)
-            
-            # Create an OrderProduct object for the product in the order
-            OrderProduct.objects.create(order=order, product=product, quantity=quantity)
-        
-        # Return a JSON response indicating success
-        return Response({'message': 'Order placed successfully!',"order_id":order.id}, status=status.HTTP_201_CREATED)
+
+    customer_id = request.user.id    
+    # Retrieve the customer object
+    customer = get_object_or_404(Customer, pk=customer_id)
     
-    # Handle other request methods or invalid requests
-    return Response({'error': 'Invalid request method or data provided.'}, status=status.HTTP_400_BAD_REQUEST)
+    # Extract order data from the request
+    order_data = request.data.get('order_data')
+    
+    # Create a new order for the customer
+    order = Order.objects.create(customer=customer)
+    for item_data in order_data:
+        product_id = item_data.get('id')
+        quantity = item_data.get('quantity')
+        
+        # Retrieve the product object
+        product = get_object_or_404(Product, pk=product_id)
+        
+        # Create an OrderProduct object for the product in the order
+        OrderProduct.objects.create(order=order, product=product, quantity=quantity)
+
+    # Return a JSON response indicating success
+    return Response({'message': 'Order placed successfully!',"order_id":order.id}, status=status.HTTP_201_CREATED)
+    
 
 
 @csrf_exempt
@@ -114,37 +106,57 @@ def list_orders(request):
 
 
 @csrf_exempt
-@api_view(['GET'])
-def approve_order(request,order_id,total_amount):
-    print(total_amount,order_id,'118---------118')
+@api_view(['POST'])
+def approve_order(request):
+    order_id = request.data.get("order_id")
+    total_amount = request.data.get("total_amount")
 
     order = Order.objects.get(id=order_id)
-    order.approved =True
-    print("total in database ",order.total,"total after approval",total_amount)
-    order.total = total_amount
-    order.save()
 
-    # update the stock levels
+    if order.approved:
+        return Response({"order_id": order_id, "message": "Order already approved"},status=409)
+
+
     for order_product in order.orderproduct_set.all():
-        print(order.orderproduct_set.all(),"this is the line 127")
         product = order_product.product
-        print(product)
-        quantity_sold = order_product.quantity
-        print(type(quantity_sold),'from order ')
-        print(type(product.stock_sold),'stock_sold')
+        quantity_to_be_sold = order_product.quantity
+
+        # Check if the available stock is sufficient for the order 
+        if product.current_stock < quantity_to_be_sold:
+            # If stock is insufficient, return a response with approved=False and an appropriate message
+            return Response({"order_id": order_id, "message": "Available Stock is not Sufficient", "approved": False},status=status.HTTP_400_BAD_REQUEST)
+        
         # Update stock_sold and current_stock for the product
-        print(product.stock_sold,'before')
-        product.stock_sold =  product.stock_sold + quantity_sold
-        print(product.stock_sold, 'after')
-        print(product.current_stock, 'before')
-        product.current_stock -= quantity_sold
-        print(product.current_stock, 'after')
+        product.stock_sold += quantity_to_be_sold
+        product.current_stock -= quantity_to_be_sold
         product.save()
 
+        order.approved = True
+        print("total in database ", order.total, "total after approval", total_amount)
+        order.total = total_amount
+        order.save()
 
-    return Response({"order_id":order_id,"message": "order approved" , "approved": True})
+    return Response({"order_id": order_id, "message": "Order approved", "approved": True})
 
 
+
+
+@csrf_exempt
+@api_view(['POST'])
+def delete_order(request):
+    order_id = request.data.get("order_id")
+
+    try:
+        # Attempt to retrieve the product
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        # If the product does not exist, return 404 Not Found
+        return Response({'message': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+
+    order.delete()
+    return Response({'message': 'Order deleted successfully'}, status=status.HTTP_200_OK)
+    
 
 #_________________________________________ML Apis________________________________________________________
 
@@ -402,9 +414,9 @@ def delete_category(request, pk):
 
 #______________________________________________Recommendation api_____________________________
 @api_view(['GET'])
-def user_recommendations(request, user_id):
+def user_recommendations(request):
     # Get the user based on user_id
-    user_target = get_object_or_404(Customer, id=user_id)
+    user_target = get_object_or_404(Customer, id=request.user.id)
 
     # Get all interactions of the given user
     user_interactions = Interaction.objects.filter(customer=user_target, purchased=True)
@@ -465,8 +477,13 @@ def best_sellings(request):
 
 @api_view(['POST'])
 def record_user_item_interactions(request):
-    print(request.data,'thisisthe request.data')
+    print('486  -------------- i am here to record transactions',type(request.user.id),request.user.id)
+    customer =request.user.id
+    for each_interaction in request.data:
+        each_interaction["customer"] = customer
+    print(request.data)
     serializer = InteractionSerializer(data=request.data, many=True)
+
     print(serializer)
     
     # Check if the request data is valid
@@ -509,7 +526,7 @@ def record_user_item_interactions(request):
 
 @csrf_exempt
 def predict(request, model_name):
-    model_name =model_name.lower()
+    # model_name =model_name.lower()
     print(model_name,'is the name')
     try:
         product_model =Prediction_Model.objects.get(name = f"{model_name}_model")

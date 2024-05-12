@@ -18,7 +18,7 @@ import Bestsell from "../../Components/Bestsell";
 
 const Home = () => {
 
-  const { baseUrl,customerId,isLoggedIn,setCustomerInfo } = useContext(UserContext)
+  const { baseUrl,customerId,isLoggedIn,setCustomerInfo,authToken } = useContext(UserContext)
   const [ recommendedProducts,setRecommendedProducts ] = useState("")
   const [ bestSelling,setBestSellingProducts ] = useState("")
   const nav=useNavigation()
@@ -30,14 +30,21 @@ const Home = () => {
   useEffect(() => {
     const customer_details = async () => {
       try {
-        const response = await fetch(`${baseUrl}/auth/get_profile/${customerId}`);
+        const response = await fetch(`${baseUrl}/auth/get_profile/`,{
+          method:'GET',
+          headers:{
+              'Content-Type':'application/json',
+              'Authorization':'Bearer ' + authToken.access
+          }
+      });
         if (!response.ok) {
           console.log("not ok");   
           throw new Error('Network response was not ok');
         }
         const jsonData = await response.json();
-        console.log(jsonData)
+        //console.log(jsonData)
         setCustomerInfo(jsonData);
+        console.log(jsonData,'is the actual ifnfo 47')
         // setTotalOrders(jsonData.total_orders);
         // console.log(jsonData); // Log the data to the console
       } catch (error) {
@@ -55,7 +62,13 @@ const Home = () => {
   useEffect(() => {
     const recommendedProducts = async () => {
       try {
-        const response = await fetch(`${baseUrl}/products/show_recommendations/${customerId}`);
+        const response = await fetch(`${baseUrl}/products/show_recommendations/`,{
+          method:'GET',
+          headers:{
+              'Content-Type':'application/json',
+              'Authorization':'Bearer ' + authToken.access
+          }
+      });
         if (!response.ok) {
           console.log("not ok");   
           throw new Error('Network response was not ok');

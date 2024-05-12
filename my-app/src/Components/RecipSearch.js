@@ -18,7 +18,7 @@ const RecipSearch = ({ searchTerm }) => {
       const response = await axios.get(url);
       setRecipes(response.data.meals);
     } catch (error) {
-      console.error(error);
+      console.log(error)
     }
   };
 
@@ -30,7 +30,9 @@ const RecipSearch = ({ searchTerm }) => {
     if (searchTerm.trim() === '') {
       setFilteredRecipes(recipes);
     } else {
+      if (recipes != null) {
       setFilteredRecipes(recipes.filter(recipe => recipe.strMeal.toLowerCase().includes(searchTerm.toLowerCase())));
+      }
     }
   }, [recipes, searchTerm]);
 

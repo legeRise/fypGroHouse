@@ -1,89 +1,79 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseServerError
+from rest_framework import status
+from django.http import JsonResponse
 from .models import Customer
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from grocery_app.models import Order
-from django.shortcuts import get_object_or_404
 from miniapp.serializers import CustomerSerializer
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate
 import json
 import re
+from rest_framework_simplejwt.views import TokenObtainPairView
+# for sales calculation
+from django.utils import timezone
+from datetime import timedelta
+
+
 
 @csrf_exempt
+@api_view(['POST'])
 def signup(request):
-
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        print(data,'is the data ')
-
-        username = data.get('username')
-        password = data.get('password')
-        confirm = data.get('confirm')
-        email = data.get('email')
-        phone = data.get('phone')
-        address = data.get('address')
+    serializer = CustomerSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Registration Successful'}, status=status.HTTP_201_CREATED)
+    print('the erros are',serializer.errors)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-        # check if user already exists
-        check_user = Customer.objects.filter(username=username)
 
-        if check_user.exists():
-            return HttpResponseBadRequest(json.dumps({'message': 'User Already Exists'}), content_type='application/json')
 
-        elif len(username) < 5:
-            return HttpResponseBadRequest(json.dumps({'message': 'Username must be at least 5 characters'}), content_type='application/json')
+class AdminLoginView(TokenObtainPairView):
 
-        elif not re.search(r'\d', username):
-            return HttpResponseBadRequest(json.dumps({'message': 'Username must contain a number'}), content_type='application/json')
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
 
-        elif password != confirm:
-            return HttpResponseBadRequest(json.dumps({'message': 'Password and Confirm Password should be the same'}), content_type='application/json')
-
-        elif len(password) < 5:
-            return HttpResponseBadRequest(json.dumps({'message': 'Password should contain at least 5 characters'}), content_type='application/json')
-
-        elif " " in username:
-            return HttpResponseBadRequest(json.dumps({'message': 'username should not contain any space'}), content_type='application/json')
-
-        elif " " in password:
-            return HttpResponseBadRequest(json.dumps({'message': 'password should not contain any space'}), content_type='application/json')
-
+        # Authenticate customer user
+        user = authenticate(username=username, password=password)
+        if user is not None and  user.is_superuser:
+            response = super().post(request, *args, **kwargs)   # get access and refresh tokens if user credentials are correct
+            return Response(response.data, status=status.HTTP_200_OK)
         else:
-            # If everything is fine, Sign Up the user
-            user = Customer(username=username, password=password, confirm=confirm,email=email,phone=phone,address=address)
-            user.save()
-            return JsonResponse({'message': 'Registration Successful'})
-
-    return JsonResponse({'message': 'Only POST Method is Allowed'})
-
-#_____________end____________
+            # Invalid credentials or not a customer
+            return Response({'error': 'Invalid Admin credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-@csrf_exempt
-def login(request):
 
-    if request.method == 'POST':
-        data = json.loads(request.body)
-    
-        username = data.get('username')
-        password = data.get('password') 
 
-        # authenticate user before logging in 
-        check_user = Customer.objects.filter(username=username, password=password)
-    
-        if check_user.exists():
-            customer_id = [user.id for user in check_user]
-            return JsonResponse({'message': 'Login Successful','customer_id':customer_id[0]})
-        else:   
-            return HttpResponseBadRequest(json.dumps({'message': 'Invalid Username or Password'}), content_type='application/json')
+class CustomerLoginView(TokenObtainPairView):
 
-    return JsonResponse({'message': 'Only POST Method is Allowed'})
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        # Authenticate customer user
+        user = authenticate(username=username, password=password)
+        if user is not None and  not user.is_superuser:
+            response = super().post(request, *args, **kwargs)   # get access and refresh tokens if user credentials are correct
+            return Response(response.data, status=status.HTTP_200_OK)
+        else:
+            # Invalid credentials or not a customer
+            return Response({'error': 'Invalid customer credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+
 
 
 @csrf_exempt
-def get_profile(request,customer_id):
-    print(customer_id, 'is the id at line 84')
+@api_view(['GET'])
+def get_profile(request):
+    customer_id = request.user.id
+    print(request.user.id,'line no 75')
     
     # Use customer_id instead of id to retrieve the Customer object
     user_profile = Customer.objects.get(id=customer_id)
@@ -92,41 +82,94 @@ def get_profile(request,customer_id):
     print("total orders  were",total_orders)
     print("total spent till now: ",total_spent)
     context = {"username": user_profile.username, "email": user_profile.email, "phone" : user_profile.phone, "address":user_profile.address,"total_orders":total_orders,"total_spent":total_spent}
-    return JsonResponse(context)
+    return Response(context)
 
     
 
 @csrf_exempt
+@api_view(['GET'])
 def total_customers(request):
-    total = len(Customer.objects.all())
-    return JsonResponse({"total_customers" :total})
+    return Response({"total_customers" :get_total_customers()},status=status.HTTP_200_OK)
 
 
 @csrf_exempt
+@api_view(['GET'])
 def dashboard_details(request):
-    total_customers = len(Customer.objects.all())
+    total_customers = get_total_customers()
     total_orders = len(Order.objects.all())
     approved_orders = len(Order.objects.filter(approved=True))
     for i in Order.objects.all():
         print(i.approved)
     total_sales = sum([order.total for order in Order.objects.all() if order.approved])
-    print(total_sales)
+    print(total_sales,'are the total sales')
+
+
+    today = timezone.now().date()
+
+    # Calculate past 7 days sales
+    weekly_sales = {}
+    for i in range(6, -1, -1):  # Iterate over the last 7 days
+        date = today - timedelta(days=i)
+        weekly_sales[date.strftime('%d/%m')] = sum([order.total for order in Order.objects.filter(order_date__date=date) if order.approved])
+
+    # Calculate past month sales
+    monthly_sales = {}
+    # Get the start and end dates for the past month
+    start_of_month = today.replace(day=1)
+    end_of_month = start_of_month.replace(day=1, month=start_of_month.month % 12 + 1) - timedelta(days=1)
+    for i in range((end_of_month - start_of_month).days + 1):  # Iterate over each day in the past month
+        date = start_of_month + timedelta(days=i)
+        monthly_sales[date.strftime('%d')] = sum([order.total for order in Order.objects.filter(order_date__date=date) if order.approved])
+
+    # Calculate today's sales
+    daily_sales = sum([order.total for order in Order.objects.filter(order_date__date=today) if order.approved])
+
+    print("Daily Sales:", daily_sales)
+    print("Weekly Sales:", weekly_sales)
+    print("Monthly Sales:", monthly_sales)
+    print("length", len(monthly_sales))
     
 
-    # total_sales =  
-    #total_sales = 234
-    #total_Expenses = 234
-    return JsonResponse({"total_customers" :total_customers, "total_orders":total_orders,"total_sales":total_sales,"approved_orders":approved_orders})
+    weeks_in_month = {}
+    # Initialize variables for tracking week and weekly total
+    current_week = 1
+    weekly_total = 0
+    week_counter = 1
 
-# pricce  --- time - --sales-  sales  ---prr
+    # Iterate through the monthly sales data
+    for key, value in monthly_sales.items():
+        # Add the value to the weekly total
+        weekly_total += value
+        # Increment the week counter
+        week_counter += 1
+        # Check if the current key is a multiple of 7 or the last key
+        if week_counter % 7 == 0 or key == len(monthly_sales):
+            # Assign the weekly total to the corresponding week
+            weeks_in_month[f"Week {current_week}"] = weekly_total
+            # Reset the weekly total for the next week
+            weekly_total = 0
+            # Increment the week counter
+            current_week += 1
 
+    print(weeks_in_month)
+
+
+    monthly_sales = weeks_in_month
+
+
+
+
+    time_sales =  { "daily_sales" : daily_sales,"weekly_sales": weekly_sales,"monthly_sales" : monthly_sales}
+
+    return Response({"total_customers" :total_customers, "total_orders":total_orders,"total_sales":total_sales,"approved_orders":approved_orders,"time_sales":time_sales},status=status.HTTP_200_OK)
 
 
 
 @csrf_exempt
 @api_view(['POST'])
-def edit_profile(request, customer_id):
+def edit_profile(request):
     try:
+        customer_id = request.user.id
         customer = Customer.objects.get(id=customer_id)
 
         if request.method == 'POST':
@@ -153,3 +196,11 @@ def edit_profile(request, customer_id):
         return JsonResponse({'error': str(e)}, status=400)
 
 #_____________end____________
+
+
+
+
+#_________________________________________________________useful_functions_____________________________________________________--
+
+def get_total_customers():
+    return len(Customer.objects.filter(is_superuser=False))

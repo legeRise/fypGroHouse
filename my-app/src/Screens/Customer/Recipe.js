@@ -46,7 +46,7 @@ const nav=useNavigation()
           <RecipSearch searchTerm={searchTerm} />
         </View>
       </ScrollView>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.imageContainer}
         onPress={() => {
          nav.navigate('Chatbot');
@@ -59,7 +59,7 @@ const nav=useNavigation()
             { transform: [{ translateX: shakeAnimation }] },
           ]}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </SafeAreaView>
   );
 };

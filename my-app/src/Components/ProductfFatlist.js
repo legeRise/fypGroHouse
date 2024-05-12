@@ -14,6 +14,7 @@ import { addToCart } from "../../Redux/CartSlice";
 
 
 const ProductfFatlist = ({data}) => {
+  const dispatch = useDispatch();
   const nav = useNavigation();
   console.log(data,'18 is the ')
  
@@ -75,8 +76,8 @@ const ProductfFatlist = ({data}) => {
             </View>
             <TouchableOpacity
              onPress={() => {
-              
-              nav.navigate("Cart");
+              dispatch(addToCart(item));
+
             }}
             
             style={{marginTop: 5,alignItems:"center",backgroundColor: "#2eb24b",marginLeft: 30,marginRight: 30,borderRadius: 10}}>

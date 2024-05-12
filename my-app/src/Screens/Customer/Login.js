@@ -7,64 +7,61 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import UserContext from "../../Contexts/UserContext";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Login = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { baseUrl, setCustomerId, setIsLoggedIn } = useContext(UserContext);
+  const { baseUrl, setCustomerId, setIsLoggedIn, setAuthToken } = useContext(UserContext);
+
   const nav = useNavigation();
 
-  const handleLogin = () => {
+
+  const handleLogin = async () => {
     // Check if username and password are provided
     if (!username || !password) {
-      showAlert('Username and password are required');
+      Alert.alert("Error",'Username and password are required');
       return;
     }
-
+  
     // Construct object with user credentials
     const userCredentials = {
       username: username,
       password: password
     };
+  
+    try {
+      // Send login data to the API
+      const response = await fetch(`${baseUrl}/auth/login/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userCredentials)
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data); // Verify the received data
+  
+        // Store the authentication token in AsyncStorage
+        await AsyncStorage.setItem("AuthToken", JSON.stringify(data));
+        setAuthToken(data)
 
-    // Send login data to the API
-    fetch(`${baseUrl}/auth/login/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userCredentials)
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Login failed');
+  
+        Alert.alert("Success", "Login Successful");
+        nav.navigate("Tabs");
+      } else {
+        Alert.alert("Error", "Invalid Username or Password");
       }
-      return response.json();
-    })
-    .then(data => {
-      console.log('Login successful:', data);
-      setCustomerId(data.customer_id);
-      setIsLoggedIn(true);
-      showAlert('Login successful');
-      nav.navigate("Tabs");
-    })
-    .catch(error => {
-      console.error('Error logging in:', error);
-      showAlert('Invalid Credentials or Network Error');
-    });
+    } catch (error) {
+      console.error("Error logging in", error);
+    }
   }
+  
 
-  const showAlert = (message) => {
-    Alert.alert(
-      'Message',
-      message,
-      [
-        { text: 'OK', onPress: () => console.log('OK Pressed') }
-      ],
-      { cancelable: false }
-    );
-  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: myColors.primary }}>
@@ -224,7 +221,7 @@ const Login = () => {
               Login as Admin
             </Text>
             <TouchableOpacity onPress={()=>{
-              nav.navigate('Tabb')
+              nav.navigate('AdminLogin')
             }}>
               <Text
                 style={{

@@ -14,7 +14,7 @@ const OrderDeatail = ({ route }) => {
   const { orderId } = route.params;
   console.log(orderSummary, 'in orderdetail 9');
 
-  const { baseUrl } = useContext(UserContext);
+  const { baseUrl,adminToken } = useContext(UserContext);
 
   const expressDeliveryFee = 30.0;
 
@@ -48,14 +48,24 @@ const OrderDeatail = ({ route }) => {
 
   const handleApprove = async (totalAmount) => {
     try {
-      // Make GET request to the endpoint
-      const response = await fetch(`${baseUrl}/products/approve_order/${orderId}/${totalAmount}`);
+      postData = {
+        "order_id" : orderId,
+        "total_amount"  : totalAmount
+       }
+      const response = await fetch(`${baseUrl}/products/approve_order/`,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':'Bearer ' + adminToken.access
+        },
+        body : JSON.stringify(postData)
+    }
+      );
       // Check if the request was successful
-      if (response.ok) {
-        // Parse the response JSON
-        const data = await response.json();
-        // Set the response data in state
+      const data = await response.json();
+      if (response.status === 200) {
         console.log(data,'after approve')
+        // Set the response data in state
         if(data.approved){
           Alert.alert(
             "Message",
@@ -72,15 +82,79 @@ const OrderDeatail = ({ route }) => {
             { cancelable: false }
           );
         }
-      } else {
-        // If request fails, throw an error
-        throw new Error('Failed to fetch data');
+      } 
+      else if (response.status === 409) {
+        Alert.alert(
+          "Message",
+          "Order Already Approved",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                // Navigate to the desired screen
+                nav.navigate("OrderList");
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+      else {
+        if (!data.approved) {
+        console.log(data,'at 87')
+        Alert.alert("Error",data.message)
+        }
       }
     } catch (error) {
       // Handle errors, for example, log them
-      console.error('Error fetching data:', error.message);
+      console.log('Error fetching data:', error.message);
     }
   };
+
+
+  const handleDelete = async () => {
+    try {
+      postData = {
+        "order_id" : orderId,
+       }
+      const response = await fetch(`${baseUrl}/products/delete_order/`,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':'Bearer ' + adminToken.access
+        },
+        body : JSON.stringify(postData)
+    }
+      );
+      // Check if the request was successful
+      const data = await response.json();
+      if (response.status === 200) {
+      
+          Alert.alert(
+            "Message",
+            "Order Deleted",
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  // Navigate to the desired screen
+                  nav.navigate("OrderList");
+                },
+              },
+            ],
+            { cancelable: false }
+          );
+        
+      } else {
+        Alert.alert("Error",data.message)
+  
+      }
+    } catch (error) {
+      // Handle errors, for example, log them
+      console.log('Error fetching data:', error.message);
+    }
+
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -112,6 +186,10 @@ const OrderDeatail = ({ route }) => {
       <View style={styles.confirmButtonContainer}>
         <TouchableOpacity style={styles.confirmButton} onPress={() => handleApprove(totalAmount)}>
           <Text style={styles.confirmButtonText}>Approve Order</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.confirmButton, { backgroundColor: 'red',marginTop: 5 }]} onPress={handleDelete}>
+          <Text style={styles.confirmButtonText}>Delete Order</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -14,6 +14,7 @@ import UserContext from "../../Contexts/UserContext";
 
 
 const SearchResult = () => {
+
   const nav = useNavigation();
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,6 +24,7 @@ const SearchResult = () => {
   const { baseUrl }  = useContext(UserContext)
   
   console.log(filteredProducts,'are the filtered products')
+  console.log(searchQuery,'is line 26 --------------alll serached prodducs')
   
 
   useEffect(() => {
@@ -121,6 +123,8 @@ const SearchResult = () => {
     );
     setFilteredProducts(filteredItems);
   };
+  
+  
 
   return (
     <SafeAreaView style={{flex: 1,marginTop:13,gap:10,paddingHorizontal:15,backgroundColor:"white"}}>
@@ -131,7 +135,6 @@ const SearchResult = () => {
           style={styles.input}
           placeholder="Search"
           onChangeText={handleSearch}
-          value={searchQuery}
         />
       </View>
       {searchQuery ? (

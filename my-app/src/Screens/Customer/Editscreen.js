@@ -7,7 +7,7 @@ import UserContext from '../../Contexts/UserContext';
 
 const Editscreen = ({ navigation, route }) => {
   const { profileData } = route.params;
-  const { customerId,baseUrl } = useContext(UserContext);
+  const { authToken,baseUrl } = useContext(UserContext);
 
   const [username, setUserName] = useState(profileData.username);
   const [mobileNumber, setMobileNumber] = useState(profileData.phone);
@@ -24,10 +24,14 @@ const Editscreen = ({ navigation, route }) => {
       "address": address
     };
 
-    fetch(`${baseUrl}/auth/edit_profile/${customerId}/`, {
-      method: 'POST',
+    fetch(`${baseUrl}/auth/edit_profile/`, {
+      method:'POST',
+      headers:{
+          'Content-Type':'application/json',
+          'Authorization':'Bearer ' + authToken.access
+      },
       body: JSON.stringify(updated_profile)
-    })
+  })
     .then(response => {
       console.log(response);
       if (!response.ok) {

@@ -121,7 +121,7 @@ const Cart = () => {
                 <Text
                   style={{ fontSize: 16, fontWeight: "500", color: "#2eb24b" }}
                 >
-                  Fruits
+                  {item.category}
                 </Text>
                 <View
                   style={{

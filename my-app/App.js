@@ -56,6 +56,7 @@ import ReConfirm from "./src/Screens/Customer/ReConfirm";
 import Final from "./src/Screens/Customer/Final";
 import OrderList from "./src/Screens/Admin/OrderList";
 import OrderDeatail from "./src/Screens/Admin/OrderDeatail";
+import AdminLogin from "./src/Screens/Admin/AdminLogin";
 import UserContext from './src/Contexts/UserContext';
 
 
@@ -85,6 +86,7 @@ const AppNavigator = () => {
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="Forgotpass" component={Forgotpass} />
           <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="AdminLogin" component={AdminLogin} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Cart" component={Cart} />
           <Stack.Screen name="Complete" component={Complete} />

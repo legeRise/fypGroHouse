@@ -16,6 +16,16 @@ const cartSlice = createSlice({
         state.push({ ...actions.payload, quantity: 1 });
       }
     },
+    addManyToCart: (state, actions) => {
+      actions.payload.forEach((item) => {
+        const isAvailable = state.find((value) => value.name === item.name);
+        if (isAvailable) {
+          isAvailable.quantity += item.quantity;
+        } else {
+          state.push({ ...item, quantity: item.quantity });
+        }
+      });
+    },
     removeFromCart: (state, actions) => {
       const newList = state.filter(
         (value) => value.name != actions.payload.name

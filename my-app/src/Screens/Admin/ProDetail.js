@@ -12,7 +12,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../../Redux/CartSlice";
 import { myColors } from "../../Utils/myColors";
-import Rating from "../../Components/Rate";
 import DropDownPicker from "react-native-dropdown-picker";
 import { PieChart } from "react-native-chart-kit";
 import UserContext from "../../Contexts/UserContext";
@@ -54,6 +53,7 @@ const ProDetail = ({ route, navigation }) => {
         console.log(data,'i am the data 54')
         if (data.expected_sales) {
         // Set the predicted sales in state
+        
         console.log(data, "the response from model");
 
         setPredictedStock(data.expected_sales);
@@ -106,30 +106,22 @@ const ProDetail = ({ route, navigation }) => {
               color: myColors.third,
               fontWeight: "700",
               marginTop: 15,
-              marginBottom: 1,
+              marginBottom: 10,
             }}
           >
             {name.charAt(0).toUpperCase() + name.slice(1)}
           </Text>
-          <Text
-            style={{
-              fontSize: 22,
-              color: myColors.forth,
-              fontWeight: "bold",
-              paddingTop: 20,
-              marginBottom: 10,
-            }}
-          >
-            Price: {price} PKR {"\n"}Available Stock: {stock}
-          </Text>
-          <Text style={{ fontSize: 20, fontWeight: "bold", color: "black", marginBottom: 10 }}>Description</Text>
+
+          <Text style={{ fontSize: 20, fontWeight: "bold", color: "black", marginBottom: 10,marginTop:10}}>Price: {price}PKR</Text>
+
+          <Text style={{ fontSize: 20, fontWeight: "bold", color: "black", marginBottom: 10,marginTop:10 }}>Description</Text>
           <Text style={{ fontSize: 16, color: "grey", marginBottom: 10 }}>
             {description}
           </Text>
           <Text style={{ fontSize: 16, color: "black", marginBottom: 10 }}>
             Category: {category}
           </Text>
-          <Rating />
+
 
           <View style={{ marginTop: 50 }}>
             {/* Year Dropdown */}

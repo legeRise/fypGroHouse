@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'grocery_app.apps.GroceryAppConfig',
     'rest_framework',
+     'rest_framework_simplejwt',
     'miniapp'
 
 
@@ -160,5 +161,17 @@ AWS_S3_REGION_NAME= os.getenv("AWS_S3_REGION_NAME")
 
 
 
-DOWNLOAD_URL = "http://192.168.68.249:9200/products/export_to_csv/"
+DOWNLOAD_URL = "http://192.168.59.249:9200/products/export_to_csv/"
+#DOWNLOAD_URL = "http://3.109.143.158:9200/products/export_to_csv/"   # ec2 ip
 
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+
+
+AUTH_USER_MODEL = 'miniapp.Customer'

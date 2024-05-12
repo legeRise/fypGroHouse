@@ -11,7 +11,7 @@ import { clearCart } from "../../../Redux/CartSlice";
 
 
 const ReConfirm = ({ route, navigation }) => {
-  const { customerId,baseUrl } = useContext(UserContext)
+  const { authToken,baseUrl } = useContext(UserContext)
   const { order, name, phoneNumber, email, address, paymentOption } = route.params;
   console.log(route.params)
   console.log("is the order ---> ",order,"---- at 17 in reconfirm.js")
@@ -66,98 +66,11 @@ const ReConfirm = ({ route, navigation }) => {
     );
   };
 
-  // Generate a unique order number
-  const generateOrderNumber = () => {
-    // Create a unique identifier (e.g., timestamp)
-    const timestamp = Date.now().toString();
-    return timestamp;
-  };
-
-  const orderNumber = generateOrderNumber();
-
-  // Pass all information to the Final screen
-//   const handleConfirmOrder = () => {
 
 
-//       const apiUrl = `${baseUrl}/products/store_order/`;
-//       const customer_id = customerId;
 
-//       order_data = []
-//       order.forEach(product => {
-//         const productId = product.id;
-//         const quantity = product.quantity;
-//         console.log(`Product ID: ${productId}, Quantity: ${quantity}`);
-//          order_data.push({ "id": productId, "quantity": quantity });
-//     });
-  
-//     fetch(apiUrl, {
-//       method: 'POST',
-//       headers: {
-//           'Content-Type': 'application/json'
-//       },
-//       body: JSON.stringify({
-//           customer_id: customer_id,
-//           order_data: order_data
-//       })
-//   })
-//   .then(response => {
-//       if (!response.ok) {
-//           throw new Error('Failed to place order.');
-//       }
-//       // Parse response body as JSON
-//       return response.json();
-//   })
-//   .then(data => {
-//       // Assuming the order ID is returned in the response
-//       const orderId = data.order_id;
-//       console.log('Order placed successfully! Order ID:', orderId);
-//       dispatch(clearCart());
-//       // navigation.navigate("Final",{ orderNumber: orderId });
-//   })
-//   .catch(error => {
-//       console.error('Error:', error);
-//   });
-
-
-//   //___________________________________________recording interaction api_______________________________________
-
-//   // Record interactions
-//   const interactions = order.map(product => ({
-//     "customer": customer_id,
-//     "id": product.id,
-//     "purchased": true
-// }));
-
-// const interactionsApiUrl = `${baseUrl}/record_interactions/`;
-// fetch(interactionsApiUrl, {
-//     method: 'POST',
-//     headers: {
-//         'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify(interactions)
-// })
-// .then(response => {
-//     if (!response.ok) {
-//         throw new Error('Failed to record interactions.');
-//     }
-//     return response.json();
-// })
-// .then(data => {
-//     console.log('Interactions recorded successfully!');
-// })
-// .catch(error => {
-//     console.error('Error recording interactions:', error);
-// });
-// })
-// .catch(error => {
-// console.error('Error placing order:', error);
-// });
-
-
-//   };
 const handleConfirmOrder = () => {
   const apiUrl = `${baseUrl}/products/store_order/`;
-  const customer_id = customerId;
 
   let order_data = [];
   order.forEach(product => {
@@ -170,10 +83,10 @@ const handleConfirmOrder = () => {
   fetch(apiUrl, {
       method: 'POST',
       headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization':'Bearer ' + authToken.access
       },
       body: JSON.stringify({
-          customer_id: customer_id,
           order_data: order_data
       })
   })
@@ -192,7 +105,6 @@ const handleConfirmOrder = () => {
   //_______________________________________________Record Interaction________________________________________
       // Record interactions
       const my_interactions = order.map(product => ({
-          "customer": customer_id,
           "product": product.id,   // the error was due to wrong field name  i had set it to 'id' before
           "purchased": true
       }));
@@ -203,7 +115,8 @@ const handleConfirmOrder = () => {
       fetch(interactionsApiUrl, {
           method: 'POST',
           headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'Authorization':'Bearer ' + authToken.access
           },
           body: JSON.stringify(my_interactions)
       })

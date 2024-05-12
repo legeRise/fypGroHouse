@@ -20,7 +20,8 @@ urlpatterns = [
 
     #orders apis
     path('all_orders/', views.list_orders, name='all_orders'),
-    path('approve_order/<str:order_id>/<str:total_amount>/', views.approve_order, name='all_ordersupdate'),
+    path('approve_order/', views.approve_order, name='approve_order'),
+    path('delete_order/', views.delete_order, name='delete_order'),
     path('store_order/', views.store_order, name='store_order'),
     path('single_order_detail/<str:order_id>', views.single_order_detail, name='single_order_detail'),
 
@@ -39,7 +40,7 @@ urlpatterns = [
 
    # Api for Recommendation tasks
     path('record_interactions/',views.record_user_item_interactions,name='record_interaction'),
-    path('show_recommendations/<str:user_id>/',views.user_recommendations,name='show_recommendation'),
+    path('show_recommendations/',views.user_recommendations,name='show_recommendation'),
 
 
     

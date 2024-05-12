@@ -14,7 +14,7 @@ const Category = () => {
   const [products, setProducts] = useState([])
 
 
-  const { baseUrl } = useContext(UserContext)
+  const { baseUrl,authToken } = useContext(UserContext)
 
 
 
@@ -47,7 +47,13 @@ const Category = () => {
 
   const handleCategoryPress = (item) => {
      
-    fetch(`${baseUrl}/products/list_category_products/${item.id}`) // Replace with your API endpoint
+    fetch(`${baseUrl}/products/list_category_products/${item.id}`,{
+      method:'GET',
+      headers:{
+          'Content-Type':'application/json',
+          // 'Authorization':'Bearer ' + authToken.access
+      }
+  }) // Replace with your API endpoint
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');

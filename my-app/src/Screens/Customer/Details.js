@@ -6,7 +6,7 @@ import {
   ScrollView,
   LogBox,
 } from "react-native";
-import React from "react";
+import React,{useState} from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -16,18 +16,27 @@ import { MaterialIcons } from "@expo/vector-icons";
 import Dropbox from "../../Components/Dropbox";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../../Redux/CartSlice";
-import Rating from "../../Components/Rate";
-import Rate from "../../Components/Rate";
+// import Rate from "../../Components/Rate";
 
 
 LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
 const Details = ({ route }) => {
+
+
+  const [filled, setFilled] = useState(false);
+
   const nav=useNavigation()
   const dispatch = useDispatch();
   const productData = route.params?.main;
   console.log(route)
   console.log(productData)
   const { name, price, pieces, image } = productData;
+
+
+  const toggleFilled = () => {
+    setFilled(!filled);
+  };
+
   
   return (
     <SafeAreaView style={{ flex: 1, gap: 20, backgroundColor: "white" }}>
@@ -77,7 +86,13 @@ const Details = ({ route }) => {
             >
               {name.charAt(0).toUpperCase() + name.slice(1)}
             </Text>
-            <MaterialIcons name="favorite-border" size={26} color="black" />
+            <TouchableOpacity onPress={toggleFilled}>
+      <MaterialIcons
+        name={filled ? 'favorite' : 'favorite-border'}
+        size={26}
+        color={filled ? '#ff69b4' : 'black'}
+      />
+    </TouchableOpacity>
           </View>
           <Text
             style={{
@@ -91,7 +106,7 @@ const Details = ({ route }) => {
             Rs {price}/{pieces}
           </Text>
           <Dropbox />
-          <Rate/>
+          {/* <Rate/> */}
         </View>
       </ScrollView>
       <TouchableOpacity

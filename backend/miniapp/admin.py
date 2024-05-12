@@ -5,4 +5,4 @@ from .models import Customer
 
 @admin.register(Customer)
 class info(admin.ModelAdmin):
-    list_display  = ['username','password','confirm']             # the name 'list_display' is a must
+    list_display  = ['username','email','password']             # the name 'list_display' is a must

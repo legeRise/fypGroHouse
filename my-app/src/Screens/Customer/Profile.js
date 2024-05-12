@@ -19,17 +19,26 @@ import { clearCart } from "../../../Redux/CartSlice";
 
 
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Profile = () => {
   
   const nav = useNavigation()
-  const { setToken,baseUrl,setCustomerId,customerId,setIsLoggedIn } = useContext(UserContext)
+  const { authToken,setAuthToken,baseUrl,setIsLoggedIn } = useContext(UserContext)
   const [ profileData, setProfileData ]  = useState(null)
   const dispatch = useDispatch();
 
   const fetchData = async () => {
+    console.log(authToken,'is here in proifle')
+    console.log(authToken,'is here in proifle')
         try {
-          const response = await fetch(`${baseUrl}/auth/get_profile/${customerId}/`);
+          const response = await fetch(`${baseUrl}/auth/get_profile/`,  {
+            method:'GET',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'Bearer ' + authToken.access
+            }
+        });
           
           if (!response.ok) {
             console.log("not ok")   
@@ -69,10 +78,10 @@ const Profile = () => {
 
   
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
-    console.log(customerId)
-    setCustomerId("")
+    setAuthToken("")
+    await AsyncStorage.setItem("AuthToken","")
     setIsLoggedIn(false)
     dispatch(clearCart());
     nav.navigate("Login"); // Navigate to the "Login" screen
@@ -168,7 +177,8 @@ const Profile = () => {
               <Text>Your Favourite</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity
+
+          {/* <TouchableOpacity
             onPress={() => {}}
             
           >
@@ -176,16 +186,15 @@ const Profile = () => {
             <MaterialCommunityIcons name="credit-card" size={25} color="#FF6347"   style={{marginRight: 15}}/>
               <Text>Payment</Text>
             </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {}}
-            
-          >
+          </TouchableOpacity> */}
+          
+          {/* <TouchableOpacity
+            onPress={() => {}}>
             <View style={styles.menuItem}>
             <MaterialCommunityIcons name="account-check-outline" size={25} color="#FF6347"   style={{marginRight: 15}}/>
               <Text>Support</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             onPress={handleEditProfile}>

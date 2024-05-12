@@ -1,16 +1,49 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../../Redux/CartSlice";
 import CheckBox from 'expo-checkbox'; // Import CheckBox from expo-checkbox
-
+import { useNavigation } from '@react-navigation/native';
+import UserContext from '../../Contexts/UserContext';
+ 
 const RecipeDetail = ({ route, navigation }) => {
   const { recipe } = route.params;
   const { strMeal, strMealThumb, idMeal } = recipe;
   const [ingredients, setIngredients] = useState([]);
   const [instructions, setInstructions] = useState('');
+  const [products, setProducts] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
+  const { baseUrl } = useContext(UserContext)
+
+  const dispatch = useDispatch();
+  const nav = useNavigation();
+
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+      const response = await fetch(`${baseUrl}/products/all_products`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+
+    // Clean-up function
+    return () => {
+      // Any clean-up code here
+    };
+  }, []);
+
 
   const fetchRecipeDetails = async () => {
     try {
@@ -48,11 +81,37 @@ const RecipeDetail = ({ route, navigation }) => {
     setSelectedIngredients(newIngredients);
   };
 
+
+
+  const searchIngredient = (text) => {
+    // console.log(products,'are the products to search from')
+    const filteredItems = products.filter((item) =>
+      item.name.toLowerCase().includes(text.toLowerCase())
+    );
+    // console.log("are the searched ingrdients",filteredItems)
+    return filteredItems;
+  };
+
+  const handleRecipeSearch = (recipeIngredients) => {
+    recipeIngredients.forEach((item) => {
+      const ingredient = searchIngredient(item);
+      if (ingredient.length > 0) { 
+        dispatch(addToCart(ingredient[0]));
+      }
+       else {
+        console.log(item,"is not available in store");
+      }
+    });
+    nav.navigate("Cart")
+  };
+  
+
   const handleBuy = () => {
-    // Pass selected ingredients to the search bar for searching
-    const searchString = selectedIngredients.map(ingredient => ingredient.name).join(', ');
-    // Now you can do something with searchString, such as passing it to the search bar component
-    console.log("Selected Ingredients:", searchString);
+    const recipeIngredients = selectedIngredients.map(item => item.name);
+    console.log(recipeIngredients)
+    handleRecipeSearch(recipeIngredients)
+    // nav.navigate("SearchRecipe",{ recipeIngredients })
+
   };
 
   return (

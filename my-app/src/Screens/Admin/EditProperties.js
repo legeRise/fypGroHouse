@@ -71,6 +71,7 @@ export default function EditProperties( {route} ) {
   const handleUpdateProduct = () => {
     console.log('what is the id of the product?',item.id)
     console.log('what is the id of the product?',item.id)
+    
     added_stock = parseInt(stock) + parseInt(item.current_stock)
 
 
@@ -231,12 +232,17 @@ export default function EditProperties( {route} ) {
         <Text>{item.stock_sold}</Text>
         </View>
         <Text style={styles.label}>Add Stock</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={stock}
-        onChangeText={setStock}
-      />
+        <TextInput
+  style={styles.input}
+  keyboardType="numeric"
+  value={stock}
+  onChangeText={(text) => {
+    // Ensure that the input is either empty, '0', or a positive integer
+    if (text === '' || text === '0' || /^\d+$/.test(text)) {
+      setStock(text);
+    }
+  }}
+/>
       
       
       <View style={styles.cameraContainer}>

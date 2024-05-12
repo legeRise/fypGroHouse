@@ -51,11 +51,6 @@ const Signup = () => {
       return;
     }
   
-    // Check if username contains a number
-    if (!/\d/.test(username)) {
-      showAlert('Username must contain a number');
-      return;
-    }
   
     // Check if password and confirm password match
     if (password !== confirm) {
@@ -87,12 +82,14 @@ const Signup = () => {
       showAlert('Please enter a valid 10-digit phone number');
       return;
     }
-  
-    // Check if address is at least 10 characters long
-    if (address.length < 10) {
-      showAlert('Address should be at least 10 characters long');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showAlert('Please enter a valid email address');
       return;
     }
+  
+
   
     // Construct object with all fields
     const registrationData = {
@@ -118,13 +115,24 @@ const Signup = () => {
       if (response.ok) {
           return response.json()
       } else {
-        throw new Error('Registration failed');
+         return response.json()
       }
     })
     .then(data => {
-      console.log('Registration successful:', data);
-      showAlert('Registration successful');
-      nav.navigate("Login"); // Navigate after successful registration
+      if (data.username) {
+        console.log('yes it is the username is ')
+        Alert.alert("Error","Username Already Registered")
+      }
+      else if (data.email) {
+        Alert.alert("Error","Email Already Registered")
+      }
+      else if (data.phone) {
+        Alert.alert("Error","Mobile No Should be Unique")
+      }
+      else{
+        Alert.alert("Success","Registration Successful");
+        nav.navigate("Login"); // Navigate after successful registration
+      }
     })
     .catch(error => {
       console.error('Error registering:', error);

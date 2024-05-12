@@ -7,6 +7,7 @@ const Products = () => {
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
 
+
   const handleAddProduct = () => {
     // Implement logic to add the product with the entered data
     // For now, we'll just log the values
