@@ -7,16 +7,16 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeIcon from '../../Components/HomeIcon';
 import UserContext from '../../Contexts/UserContext';
+import { useNavigation } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 
 export default function Editcat({route}) {
 
   const { item } = route.params
-
-  const { baseUrl } = useContext(UserContext)
-
-
+  const { baseUrl,adminToken } = useContext(UserContext)
+  const nav = useNavigation()
+  
   const [name, setName] = useState(item.name);
   const [image, setImage] = useState(item.image);
 
@@ -42,11 +42,12 @@ export default function Editcat({route}) {
       method: 'POST',
       headers: {
         'Content-Type': 'multipart/form-data', // Use multipart/form-data for file uploads
+        'Authorization':'Bearer ' + adminToken.access
       },
       body: formData
     })
     .then(response => {
-      console.log(response)
+      console.log(response,'is the response')
       if (!response.ok) {
         throw new Error('Failed to update category');
       }
@@ -55,6 +56,7 @@ export default function Editcat({route}) {
     .then(data => {
       console.log('category updated successfully:', data);
       Alert.alert("Success","Category Updated Successfully!")
+      nav.navigate("Updatecat")
       // Optionally, you can perform any additional actions here after successful addition
     })
     .catch(error => {

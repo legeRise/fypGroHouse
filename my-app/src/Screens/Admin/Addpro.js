@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 const windowWidth = Dimensions.get('window').width;
 
 export default function Addpro() {
-      const { baseUrl }  = useContext(UserContext)
+      const { baseUrl,adminToken }  = useContext(UserContext)
       const nav = useNavigation()
   
   // const [id, setId] = useState(new Date().getTime());
@@ -27,35 +27,16 @@ export default function Addpro() {
   const [categories, setCategories ]= useState(['']);
 
 
-  // useEffect(() => {
-  //   const fetchCategories = async () => {
-  //     try {
-  //       const response = await fetch(`${baseUrl}/products/all_categories`);
-  //       const data = await response.json();
-  //       console.log("i am data in 31 addpro.js",data)
-  //       const categoryNames = data.map((item) => item.name);
-  //       console.log(categoryNames);
-  //       setCategories(categoryNames);
-  //     } catch (error) {
-  //       Alert.alert(
-  //         'Error',
-  //         'Please Add a category first',
-  //         [{ text: 'OK', onPress: () => nav.navigate('Addcat') }]
-  //         // Assuming 'AddCategoryScreen' is the name of the screen you want to navigate to
-  //     );
-
-  //       // console.error('Error fetching categories:', error);
-  //       // Handle error, show error message, etc.
-  //     }
-  //   };
-
-  //   fetchCategories(); // Call the fetchCategories function when the component mounts
-  // }, []);
-
   useEffect(() => {
     const fetchCategories = async () => {
         try {
-            const response = await fetch(`${baseUrl}/products/all_categories`);
+            const response = await fetch(`${baseUrl}/products/all_categories`,{
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json', // Use multipart/form-data for file uploads
+                'Authorization':'Bearer ' + adminToken.access
+              },
+            });
             const data = await response.json();
             console.log("i am data in 31 addpro.js", data);
             if (data.length !== 0) {
@@ -110,6 +91,7 @@ export default function Addpro() {
       method: 'POST',
       headers: {
         'Content-Type': 'multipart/form-data', // Use multipart/form-data for file uploads
+        'Authorization':'Bearer ' + adminToken.access
       },
       body: formData
     })
@@ -126,7 +108,7 @@ export default function Addpro() {
       // Optionally, you can perform any additional actions here after successful addition
     })
     .catch(error => {
-      console.error('Error adding product:', error);
+      console.log(error)
       // Handle errors or display error message to the user
     });
   };
@@ -157,7 +139,6 @@ export default function Addpro() {
       // console.log('Selected image URI:', result["assets"][0].uri);
       setImage(result["assets"][0].uri);
     } catch (error) {
-      console.error('Error selecting image:', error);
       alert('Error selecting image. Please try again.'); 
     }
   };

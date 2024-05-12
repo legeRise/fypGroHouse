@@ -12,14 +12,20 @@ import HomeSearch from '../../Components/HomeSearch';
 const Editpro = () => {
    [products, setProducts] = useState("")
 
-   const { baseUrl } = useContext(UserContext)
+   const { baseUrl,adminToken } = useContext(UserContext)
    const nav= useNavigation(); // Initialize navigation object
 
 
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${baseUrl}/products/all_products`);
+      const response = await fetch(`${baseUrl}/products/all_products`,{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json', // Use multipart/form-data for file uploads
+          'Authorization':'Bearer ' + adminToken.access
+        },
+      });
       const data = await response.json();
       const productList = data.map((item) => item);
       setProducts(productList);

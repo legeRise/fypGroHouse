@@ -22,7 +22,14 @@ const Category = () => {
     // Define the function to fetch data
     const fetchData = async () => {
       try {
-        const response = await fetch(`${baseUrl}/products/all_categories/`); // Replace with your API endpoint
+        const response = await fetch(`${baseUrl}/products/all_categories/`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json', 
+            'Authorization':'Bearer ' + authToken.access
+          },
+        }
+    ); // Replace with your API endpoint
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -51,7 +58,7 @@ const Category = () => {
       method:'GET',
       headers:{
           'Content-Type':'application/json',
-          // 'Authorization':'Bearer ' + authToken.access
+          'Authorization':'Bearer ' + authToken.access
       }
   }) // Replace with your API endpoint
       .then(response => {

@@ -17,7 +17,7 @@ const windowWidth = Dimensions.get('window').width;
 export default function EditProperties( {route} ) {
  const nav = useNavigation()
   const { item } = route.params
-  const { baseUrl } = useContext(UserContext)
+  const { baseUrl,adminToken } = useContext(UserContext)
   // const [id, setId] = useState(new Date().getTime());
   const [name, setName] = useState(item.name);
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -32,7 +32,13 @@ export default function EditProperties( {route} ) {
 
   const fetchCategories = async () => {
       try {
-        const response = await fetch(`${baseUrl}/products/all_categories`);
+        const response = await fetch(`${baseUrl}/products/all_categories`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json', // Use multipart/form-data for file uploads
+            'Authorization':'Bearer ' + adminToken.access
+          },
+        });
         const data = await response.json();
         const categoryNames = data.map((item) => item.name);
         console.log(categoryNames);
@@ -95,18 +101,18 @@ export default function EditProperties( {route} ) {
     });
     console.log('the form data',formData)
     // Make the POST request to the endpoint
-  //   console.log(`${baseUrl}/products/update_product/${item.id}`)
     fetch(`${baseUrl}/products/update_product/${item.id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'multipart/form-data', // Use multipart/form-data for file uploads
+        'Authorization':'Bearer ' + adminToken.access
+
       },
       body: formData
     })
     .then(response => {
       console.log(response)
       if (!response.ok) {
-        throw new Error('Failed to update product');
         Alert.alert("Error","Failed to Update Product")
       }
 
@@ -115,6 +121,7 @@ export default function EditProperties( {route} ) {
     .then(data => {
       console.log('Product updated successfully:', data);
       Alert.alert("Success","Product Updated Successfully")
+      nav.navigate("Editpro")
       // Optionally, you can perform any additional actions here after successful addition
     })
     .catch(error => {

@@ -27,6 +27,7 @@ import Products from "./src/Screens/Customer/Products";
 
 import { useContext,useEffect,useState } from 'react';
 import Forgotpass from "./src/Screens/Customer/Forgotpass";
+import ConfirmEmail from "./src/Screens/Customer/ConfirmEmail";
 import Ott from "./src/Screens/Customer/Ott";
 import Reset from "./src/Screens/Customer/Reset";
 import Editscreen from "./src/Screens/Customer/Editscreen";
@@ -85,6 +86,7 @@ const AppNavigator = () => {
           <Stack.Screen name="Splash" component={Splash}  />
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="Forgotpass" component={Forgotpass} />
+          <Stack.Screen name="ConfirmEmail" component={ConfirmEmail} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="AdminLogin" component={AdminLogin} />
           <Stack.Screen name="Home" component={Home} />

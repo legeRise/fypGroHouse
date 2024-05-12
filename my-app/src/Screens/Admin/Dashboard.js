@@ -83,16 +83,22 @@ const Dashboard = () => {
   useEffect(() => {
     const bestSelling = async () => {
       try {
-        const response = await fetch(`${baseUrl}/products/best_sellings/`);
+        const response = await fetch(`${baseUrl}/products/best_sellings/`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json', 
+            'Authorization':'Bearer ' + adminToken.access
+          },
+        });
         if (!response.ok) {
           console.log("not ok");   
           throw new Error('Network response was not ok');
         }
         const jsonData = await response.json();
-        console.log(jsonData.best_selling_products)
+        console.log(jsonData.best_selling_products,'this is the best_selling_products')
         setBestSellingProducts(jsonData.best_selling_products);
         // setTotalOrders(jsonData.total_orders);
-        console.log(jsonData); // Log the data to the console
+        console.log(jsonData,'this is the jsondata'); // Log the data to the console
       } catch (error) {
         console.error('Error fetching data:', error);
       }

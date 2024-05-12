@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -10,13 +10,19 @@ import UserContext from '../../Contexts/UserContext';
 
 const Delcat = () => {
   const [categories, setCategories] = useState([]); // Initialize as an array
-  const { baseUrl } = useContext(UserContext);
+  const { baseUrl,adminToken } = useContext(UserContext);
   const nav = useNavigation();
 
 
 const fetchCategories = async () => {
       try {
-        const response = await fetch(`${baseUrl}/products/all_categories`);
+        const response = await fetch(`${baseUrl}/products/all_categories`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json', 
+            'Authorization':'Bearer ' + adminToken.access
+          },
+        });
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -53,11 +59,15 @@ const fetchCategories = async () => {
 
     fetch(`${baseUrl}/products/delete_category/${item.id}`, {
       method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json', 
+        'Authorization':'Bearer ' + adminToken.access
+      },
     })
       .then(response => {
         console.log(response)
         if (!response.ok) {
-          throw new Error('Failed to Delete Category');
+          Alert.alert('Failed to Delete Category');
         }
         return response.json();
       })

@@ -1,5 +1,5 @@
 import React,{useContext,useState,useEffect} from 'react';
-import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity,Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'; // Import Expo's AntDesign and MaterialCommunityIcons
 import { useNavigation } from '@react-navigation/native';
@@ -11,7 +11,7 @@ const Delpro = () => {
   // Sample data for demonstration
   [products, setProducts] = useState("")
 
-  const { baseUrl } = useContext(UserContext)
+  const { baseUrl,adminToken } = useContext(UserContext)
 
 
   const nav = useNavigation() 
@@ -21,7 +21,13 @@ const Delpro = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${baseUrl}/products/all_products`);
+        const response = await fetch(`${baseUrl}/products/all_products`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json', 
+            'Authorization':'Bearer ' + adminToken.access
+          },
+        });
         const data = await response.json();
         const productList = data.map((item) => item);
         console.log(productList);
@@ -35,31 +41,34 @@ const Delpro = () => {
     fetchProducts(); 
   }, []);
 
- 
-  const handleDeleteProduct = (item) => {
-    console.log('what is the id of the product?',item.id,"product name is ",item.name)
-
-
-    fetch(`${baseUrl}/products/delete_product/${item.id}`, {
-      method: 'Delete',
-    })
-    .then(response => {
-      console.log(response)
-      if (!response.ok) {
-        throw new Error('Failed to Delete product');
+  const handleDeleteProduct = async (item) => {
+    console.log('What is the ID of the product?', item.id, "Product name is ", item.name);
+  
+    try {
+      const response = await fetch(`${baseUrl}/products/delete_product/${item.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + adminToken.access
+        }
+      });
+  
+      const data = await response.json();
+      console.log(response.status,'is the ersposne .status')
+  
+      if (response.status === 204) {
+        console.log('Product Deleted successfully:', data);
+        Alert.alert("Success", "Product Deleted Successfully");
+      } else {
+        console.log(response.status);
+        console.log(data);
       }
-      return response.json();
-    })
-    .then(data => {
-      console.log('Product Deleted successfully:', data);
-      Alert.alert("Success","Product Deleted Successfully")
-      // Optionally, you can perform any additional actions here after successful addition
-    })
-    .catch(error => {
-      console.error( error);
+    } catch (error) {
+      console.error(error);
       // Handle errors or display error message to the user
-    });
-   };
+    }
+  };
+  
 
 
   return (

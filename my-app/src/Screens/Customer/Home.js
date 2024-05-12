@@ -18,7 +18,7 @@ import Bestsell from "../../Components/Bestsell";
 
 const Home = () => {
 
-  const { baseUrl,customerId,isLoggedIn,setCustomerInfo,authToken } = useContext(UserContext)
+  const { baseUrl,setCustomerInfo,authToken } = useContext(UserContext)
   const [ recommendedProducts,setRecommendedProducts ] = useState("")
   const [ bestSelling,setBestSellingProducts ] = useState("")
   const nav=useNavigation()
@@ -92,7 +92,13 @@ const Home = () => {
   useEffect(() => {
     const bestSelling = async () => {
       try {
-        const response = await fetch(`${baseUrl}/products/best_sellings/`);
+        const response = await fetch(`${baseUrl}/products/best_sellings/`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json', 
+            'Authorization':'Bearer ' + authToken.access
+          },
+        });
         if (!response.ok) {
           console.log("not ok");   
           throw new Error('Network response was not ok');

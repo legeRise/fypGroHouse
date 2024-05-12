@@ -14,7 +14,7 @@ const windowWidth = Dimensions.get('window').width;
 
 export default function Addcat() {
 
-  const { baseUrl } = useContext(UserContext)
+  const { baseUrl,adminToken } = useContext(UserContext)
 
   // const [id, setId] = useState(new Date().getTime());
   const [name, setName] = useState('');
@@ -33,12 +33,15 @@ export default function Addcat() {
       type: 'image/jpeg', // Adjust the type based on the image format
       name: 'category_image.jpg' // You can specify any file name here
     });
+
+
   
     // Make the POST request to the endpoint
     fetch(`${baseUrl}/products/add_category/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'multipart/form-data', // Use multipart/form-data for file uploads
+        'Authorization':'Bearer ' + adminToken.access
       },
       body: formData
     })

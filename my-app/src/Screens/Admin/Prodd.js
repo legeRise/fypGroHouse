@@ -1,13 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import UserContext from '../../Contexts/UserContext';
 
 const Prodd = () => {
   const nav=useNavigation()
-
-  const { baseUrl } = useContext(UserContext)
-
 
   return (
     <View style={styles.container}>

@@ -5,7 +5,6 @@ import { myColors } from "../../Utils/myColors";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
 import UserContext from "../../Contexts/UserContext";
 
 const Signup = () => {
@@ -16,7 +15,7 @@ const Signup = () => {
   const [phone, setPhone] = useState(null);
   const [address, setAddress] = useState(null);
 
-  const { baseUrl,setUserInfo } = useContext(UserContext)
+  const { baseUrl} = useContext(UserContext)
 
  
 
@@ -103,7 +102,6 @@ const Signup = () => {
 
     console.log(registrationData)
     // Send registration data to the API
-    console.log(`${baseUrl}/auth/signup/`)
     fetch(`${baseUrl}/auth/signup/`, {
       method: 'POST',
       headers: {
@@ -131,7 +129,7 @@ const Signup = () => {
       }
       else{
         Alert.alert("Success","Registration Successful");
-        nav.navigate("Login"); // Navigate after successful registration
+        nav.navigate("ConfirmEmail",{"email" : email}); // Navigate after successful registration
       }
     })
     .catch(error => {

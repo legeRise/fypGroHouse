@@ -16,7 +16,7 @@ const RecipeDetail = ({ route, navigation }) => {
   const [instructions, setInstructions] = useState('');
   const [products, setProducts] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
-  const { baseUrl } = useContext(UserContext)
+  const { baseUrl,authToken } = useContext(UserContext)
 
   const dispatch = useDispatch();
   const nav = useNavigation();
@@ -25,7 +25,13 @@ const RecipeDetail = ({ route, navigation }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-      const response = await fetch(`${baseUrl}/products/all_products`);
+      const response = await fetch(`${baseUrl}/products/all_products`,{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json', 
+          'Authorization':'Bearer ' + authToken.access
+        },
+      });
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

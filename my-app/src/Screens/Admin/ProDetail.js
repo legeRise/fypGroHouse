@@ -21,7 +21,7 @@ const ProDetail = ({ route, navigation }) => {
   console.log("i am proDetail.js")
   const { productData } = route.params;
   const { id, name, price, stock, image, description, category } = productData;
-  const { baseUrl } = useContext(UserContext);
+  const { baseUrl,adminToken} = useContext(UserContext);
 
   console.log("this is the productData in ProDetail", productData);
   // State variables for selected year and month
@@ -45,6 +45,7 @@ const ProDetail = ({ route, navigation }) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization':'Bearer ' + adminToken.access
       },
       body: JSON.stringify(data),
     })

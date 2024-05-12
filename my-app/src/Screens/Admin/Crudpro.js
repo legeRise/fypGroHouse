@@ -8,7 +8,7 @@ import UserContext from '../../Contexts/UserContext'
 const Crudpro = () => {
    
   const nav=useNavigation()
-  const { baseUrl } = useContext(UserContext);
+  const { baseUrl,adminToken } = useContext(UserContext);
 
 
   
@@ -16,7 +16,13 @@ const Crudpro = () => {
 
   const handleViewProduct = () => {
 
-    fetch(`${baseUrl}/products/all_products/`)
+    fetch(`${baseUrl}/products/all_products/`,{
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json', 
+        'Authorization':'Bearer ' + adminToken.access
+      },
+    })
       .then(response => response.json())
       .then(data => {
         nav.navigate('Viewpro', { productList: data });

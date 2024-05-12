@@ -6,14 +6,20 @@ import { useNavigation } from '@react-navigation/native'
 import UserContext from '../../Contexts/UserContext'
 const Crudcat = () => {
 
-  const { baseUrl }  = useContext(UserContext)
+  const { baseUrl, adminToken}  = useContext(UserContext)
 
   const nav=useNavigation()
 
 
   
   const handleViewCategory = () => {
-    fetch(`${baseUrl}/products/all_categories/`)
+    fetch(`${baseUrl}/products/all_categories/`,{
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json', 
+        'Authorization':'Bearer ' + adminToken.access
+      },
+    })
       .then(response => response.json())
       .then(data => {
         nav.navigate('Viewcat',{categoryList: data})

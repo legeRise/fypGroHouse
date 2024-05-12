@@ -47,7 +47,7 @@ const AdminLogin = () => {
         console.log(data); // Verify the received data
   
         // Store the authentication token in AsyncStorage
-        await AsyncStorage.setItem("AdminAuthToken", JSON.stringify(data));
+        await AsyncStorage.setItem("AdminToken", JSON.stringify(data));
         setAdminToken(data)
   
         Alert.alert("Success", "Login Successful");

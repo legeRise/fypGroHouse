@@ -12,13 +12,19 @@ import HomeSearch from '../../Components/HomeSearch';
 const Updatecat = () => {
    [categories, setCategories] = useState("")
 
-   const { baseUrl } = useContext(UserContext)
+   const { baseUrl,adminToken } = useContext(UserContext)
    const nav= useNavigation(); // Initialize navigation object
 
 
   const fetchCategories = async () => {
       try {
-        const response = await fetch(`${baseUrl}/products/all_categories`);
+        const response = await fetch(`${baseUrl}/products/all_categories`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json', // Use multipart/form-data for file uploads
+            'Authorization':'Bearer ' + adminToken.access
+          },
+        });
         const data = await response.json();
         const categoriesList = data.map((item) => item);
         console.log(categoriesList);

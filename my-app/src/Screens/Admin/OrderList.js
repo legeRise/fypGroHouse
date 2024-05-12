@@ -14,7 +14,7 @@ const OrderList = () => {
   const [orderSummary, SetOrderSummary] = useState([])
   // const [allOrderData, setAllOrderData] = useState([])
   const [allOrders, setAllOrders] = useState([])
-  const { baseUrl } = useContext(UserContext)
+  const { baseUrl,adminToken } = useContext(UserContext)
 
   const nav = useNavigation()
 
@@ -22,8 +22,13 @@ const OrderList = () => {
 
     const fetchData = async () => {
       try {
-        console.log(`${baseUrl}/products/all_orders/`)
-        const response = await fetch(`${baseUrl}/products/all_orders/`); // Replace with your API endpoint
+        const response = await fetch(`${baseUrl}/products/all_orders/`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json', // Use multipart/form-data for file uploads
+            'Authorization':'Bearer ' + adminToken.access
+          },
+        }); // Replace with your API endpoint
         // console.log("i am in ordelist",response.json())
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -56,7 +61,13 @@ const OrderList = () => {
 
 const handleOrderDetailView = async (item) => {
     try {
-        const response = await fetch(`${baseUrl}/products/single_order_detail/${item.id}`);
+        const response = await fetch(`${baseUrl}/products/single_order_detail/${item.id}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json', // Use multipart/form-data for file uploads
+            'Authorization':'Bearer ' + adminToken.access
+          },
+        });
         
         if (!response.ok) {
             throw new Error('Network response was not ok');
