@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
+from rest_framework.permissions import IsAdminUser,AllowAny
 from rest_framework import status
-from django.http import JsonResponse
 from .models import Customer,Confirmation_Code
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -12,7 +12,6 @@ from grocery_app.models import Order
 from miniapp.serializers import CustomerSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
-import json
 import re
 from rest_framework_simplejwt.views import TokenObtainPairView
 # for sales calculation
@@ -21,10 +20,9 @@ from datetime import timedelta
 
 
 
-
-
 @csrf_exempt
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def signup(request):
     serializer = CustomerSerializer(data=request.data)
     if serializer.is_valid():
@@ -108,12 +106,14 @@ def get_profile(request):
 
 @csrf_exempt
 @api_view(['GET'])
+@permission_classes([IsAdminUser])
 def total_customers(request):
     return Response({"total_customers" :get_total_customers()},status=status.HTTP_200_OK)
 
 
 @csrf_exempt
 @api_view(['GET'])
+@permission_classes([IsAdminUser])
 def dashboard_details(request):
     total_customers = get_total_customers()
     total_orders = len(Order.objects.all())
@@ -193,7 +193,7 @@ def edit_profile(request):
         customer = Customer.objects.get(id=customer_id)
 
         if request.method == 'POST':
-            data = json.loads(request.body)
+            data = request.data
             username = data.get('username')
             phone = data.get('phone')  # Fixed the field name
             email = data.get('email')
@@ -207,13 +207,13 @@ def edit_profile(request):
             customer.save()
 
         # Return success response
-        return JsonResponse({'user': 'updated', 'id': customer.id})  # Fixed the variable name
+        return Response({'message': 'profile updated Successfully'},status=status.HTTP_200_OK)  # Fixed the variable name
     except Customer.DoesNotExist:
         # Handle the case where the user does not exist
-        return JsonResponse({'error': 'User not found'}, status=404)
+        return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         # Handle other exceptions
-        return JsonResponse({'error': str(e)}, status=400)
+        return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 #_____________end____________
 

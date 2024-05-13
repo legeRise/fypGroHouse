@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const UserContextProvider = ({children}) => {
-    const [baseUrl, setBaseUrl] = React.useState("http://192.168.59.249:9200")
+    const [baseUrl, setBaseUrl] = React.useState("http://192.168.43.249:9200")
     const [ customerId, setCustomerId] = React.useState("")
     const [ isLoggedIn, setIsLoggedIn] = React.useState(false)
     const [ authToken,setAuthToken ] =   React.useState( AsyncStorage.getItem('AuthToken') )

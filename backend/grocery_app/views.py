@@ -1,4 +1,3 @@
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_exempt
@@ -8,13 +7,11 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework import status
 from .useful_functions import remove_duplicates
 from django.conf import settings
-from django.shortcuts import get_object_or_404
 from .models import Product,Prediction_Model,Dataset,Category,Order,OrderProduct,Customer,Product,Interaction
 from .useful_functions import save_profile_pic
 from .helper_functions import load_model
 from .serializers import ProductSerializer,CategorySerializer,OrderSerializer,InteractionSerializer
 import numpy as np
-import json
 import os
 import uuid
 import csv
@@ -22,6 +19,7 @@ import csv
 #_________________________________________Order Apis________________________________________________________
 @csrf_exempt
 @api_view(['GET'])
+@permission_classes([IsAdminUser])
 def single_order_detail(request, order_id):
     single_order = Order.objects.get(id=order_id)
     product_list_in_order = single_order.orderproduct_set.all()
@@ -62,7 +60,8 @@ def single_order_detail(request, order_id):
         }
         order_summary.append(product_summary)
 
-    return Response(order_summary)
+    return Response(order_summary,status=status.HTTP_200_OK)
+
 
 
 @api_view(['POST'])
@@ -94,6 +93,7 @@ def store_order(request):
 
 @csrf_exempt
 @api_view(['GET'])
+@permission_classes([IsAdminUser])
 def list_orders(request):
     orders = Order.objects.all() 
     serializer = OrderSerializer(orders, many=True)
@@ -102,12 +102,13 @@ def list_orders(request):
         # print(Customer.objects.get(id=i["customer"]))
         i["customer_name"]= Customer.objects.get(id=i["customer"]).username
     print(serializer.data)
-    return Response(serializer.data)
+    return Response(serializer.data,status=status.HTTP_200_OK)
 
 
 
 @csrf_exempt
 @api_view(['POST'])
+@permission_classes([IsAdminUser])
 def approve_order(request):
     order_id = request.data.get("order_id")
     total_amount = request.data.get("total_amount")
@@ -115,7 +116,7 @@ def approve_order(request):
     order = Order.objects.get(id=order_id)
 
     if order.approved:
-        return Response({"order_id": order_id, "message": "Order already approved"},status=409)
+        return Response({"order_id": order_id, "message": "Order already approved"},status=status.HTTP_409_CONFLICT)
 
 
     for order_product in order.orderproduct_set.all():
@@ -137,13 +138,14 @@ def approve_order(request):
         order.total = total_amount
         order.save()
 
-    return Response({"order_id": order_id, "message": "Order approved", "approved": True})
+    return Response({"order_id": order_id, "message": "Order approved", "approved": True},status=status.HTTP_200_OK)
 
 
 
 
 @csrf_exempt
 @api_view(['POST'])
+@permission_classes([IsAdminUser])
 def delete_order(request):
     order_id = request.data.get("order_id")
 
@@ -160,7 +162,8 @@ def delete_order(request):
     
 
 #_________________________________________ML Apis________________________________________________________
-
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
 def download_dataset_as_csv(request):
     # Get the dataset queryset
     queryset = Dataset.objects.all()
@@ -183,17 +186,18 @@ def download_dataset_as_csv(request):
 
 
         # Return a response with a link to download the file
-        return JsonResponse({ "download_link" : download_url})
+        return Response({ "download_link" : download_url},status=status.HTTP_200_OK)
     else:
-        return JsonResponse({ "message" : "Sorry, the CSV file couldn't be generated as there are no data records available."})
+        return Response({ "message" : "Sorry, the CSV file couldn't be generated as there are no data records available."},status=status.HTTP_404_NOT_FOUND)
 
 
 @csrf_exempt
+@permission_classes([IsAdminUser])
 def list_models(request):
     models = Prediction_Model.objects.all()
 
     models =  [ {"model_id":model.id,"product_name": model.product.name, "model_name" : model.name,"available" : bool(model.model_path) } for model in models]
-    return JsonResponse({'available_models': models})
+    return Response({'available_models': models},status=status.HTTP_200_OK)
 
 
 
@@ -208,7 +212,7 @@ def list_products(request):
         cat_id =product["category"]
         category =Category.objects.get(id=cat_id)
         product["category"] = category.name
-    return Response(serializer.data)
+    return Response(serializer.data,status=status.HTTP_200_OK)
 
 
 # view all products in a category
@@ -226,6 +230,7 @@ def list_products_by_category(request,cat_id):
     return Response(serializer.data)
 
 
+
 # view single product api
 @api_view(['GET'])
 def single_product(request,product_id):
@@ -237,6 +242,7 @@ def single_product(request,product_id):
 
 # add a new product api
 @api_view(['POST'])
+@permission_classes([IsAdminUser])
 def add_product(request):
     if request.method == 'POST':
         if 'image' not in request.data:
@@ -269,6 +275,7 @@ def add_product(request):
 
 @csrf_exempt
 @api_view(['POST'])
+@permission_classes([IsAdminUser])
 def update_product(request, product_id):
     print(request.data)
     product = Product.objects.get(pk=product_id)
@@ -353,6 +360,7 @@ def single_category(request,pk):
 
 # add a new Category api
 @api_view(['POST'])
+@permission_classes([IsAdminUser])
 def add_category(request):
     if request.method == 'POST':
         if 'image' not in request.data:
@@ -381,6 +389,7 @@ def add_category(request):
 
 # update an existing Category api
 @api_view(['POST'])
+@permission_classes([IsAdminUser])
 def update_category(request, pk):
     try:
         cat = Category.objects.get(pk=pk)
@@ -403,6 +412,7 @@ def update_category(request, pk):
 
 # delete a category api
 @api_view(['DELETE'])
+@permission_classes([IsAdminUser])
 def delete_category(request, pk):
     try:
         cat = Category.objects.get(pk=pk)
@@ -504,55 +514,35 @@ def record_user_item_interactions(request):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #__________________________________Model apis_________________________________________________________
 
 
 @csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
 def predict(request, model_name):
     # model_name =model_name.lower()
     print(model_name,'is the name')
     try:
         product_model =Prediction_Model.objects.get(name = f"{model_name}_model")
     except Exception as e:
-        return JsonResponse({'error': f"The Product with the name '{model_name}' does not exist",'model_exists':False}, status=404)
+        return Response({'error': f"The Product with the name '{model_name}' does not exist",'model_exists':False}, status=status.HTTP_404_NOT_FOUND)
 
     print(product_model,'testing')
     if not product_model.model_path:
-        return JsonResponse({'error': f"Model for '{model_name}' is not trained yet",'model_exists':False}, status=404)
+        return Response({'error': f"Model for '{model_name}' is not trained yet",'model_exists':False}, status=status.HTTP_404_NOT_FOUND)
     else:
         model_file= load_model(name = model_name, path = product_model.model_path)
         print(model_file)
 
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        
-        price = data.get('price')
-        period = data.get('time_period')
-        time_period = {'daily': 1, 'weekly': 7, 'monthly': 30}
-
-        model = model_file[model_name]
-        exog = list(np.array([price]).reshape(1, -1)) * time_period[period]
-        prediction = model.forecast(steps=time_period[period], exog=exog)
-        return JsonResponse({'expected_sales': int(prediction.sum()),'model_exists':True})
     
-    return JsonResponse({'message': 'Method Not Allowed'},safe=False)
+    price = request.data.get('price')
+    period = request.data.get('time_period')
+    time_period = {'daily': 1, 'weekly': 7, 'monthly': 30}
+
+    model = model_file[model_name]
+    exog = list(np.array([price]).reshape(1, -1)) * time_period[period]
+    prediction = model.forecast(steps=time_period[period], exog=exog)
+    return Response({'expected_sales': int(prediction.sum()),'model_exists':True},status=status.HTTP_200_OK)
+    
 

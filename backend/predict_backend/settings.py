@@ -171,7 +171,7 @@ AWS_S3_REGION_NAME= os.getenv("AWS_S3_REGION_NAME")
 
 
 
-DOWNLOAD_URL = "http://192.168.59.249:9200/products/export_to_csv/"
+DOWNLOAD_URL = "http://192.168.43.249:9200/products/export_to_csv/"
 #DOWNLOAD_URL = "http://3.109.143.158:9200/products/export_to_csv/"   # ec2 ip
 
 
