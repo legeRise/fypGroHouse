@@ -3,7 +3,7 @@ from django.db.models import Count
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser,AllowAny
 from rest_framework import status
 from .useful_functions import remove_duplicates
 from django.conf import settings
@@ -155,7 +155,9 @@ def delete_order(request):
     except Order.DoesNotExist:
         # If the product does not exist, return 404 Not Found
         return Response({'message': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
-        
+    
+    if order.approved:
+        return Response({'message': 'Approved Order Cannot be Deleted'}, status=status.HTTP_400_BAD_REQUEST)
 
     order.delete()
     return Response({'message': 'Order deleted successfully'}, status=status.HTTP_200_OK)

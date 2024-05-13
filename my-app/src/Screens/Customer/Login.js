@@ -14,7 +14,7 @@ const Login = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { baseUrl, setCustomerId, setIsLoggedIn, setAuthToken } = useContext(UserContext);
+  const { baseUrl, setAuthToken } = useContext(UserContext);
 
   const nav = useNavigation();
 

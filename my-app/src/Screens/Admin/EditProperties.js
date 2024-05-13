@@ -248,6 +248,9 @@ export default function EditProperties( {route} ) {
     if (text === '' || text === '0' || /^\d+$/.test(text)) {
       setStock(text);
     }
+    else {
+      Alert.alert("Error","Stock Value is not valid")
+    }
   }}
 />
       
