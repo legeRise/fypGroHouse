@@ -78,6 +78,7 @@ const Tabs = () => {
         }}
       />
       <Tab.Screen name="Recipe" component={Recipe} 
+      initialParams={{ productName: "" }}
       options={{
         tabBarIcon: ({ focused }) => 
         focused ? (

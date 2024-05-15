@@ -15,6 +15,7 @@ import { Store } from "./Redux/Store";
 import Complete from "./src/Screens/Customer/Complete";
 import Tabs from "./src/Screens/Customer/Tabs";
 import Recipe from "./src/Screens/Customer/Recipe";
+import ViewRecipe from "./src/Screens/Customer/ViewRecipe";
 import Profile from "./src/Screens/Customer/Profile";
 import Category from "./src/Screens/Customer/Category";
 import Fruits from "./src/Components/Fruits";
@@ -96,6 +97,7 @@ const AppNavigator = () => {
           <Stack.Screen name="Tabs" component={Tabs} />
           <Stack.Screen name="Details" component={Details} />
           <Stack.Screen name="Recipe" component={Recipe} />
+          <Stack.Screen name="ViewRecipe" component={ViewRecipe} />
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="Category" component={Category} />
           <Stack.Screen name="Fruits" component={Fruits} />

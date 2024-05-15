@@ -8,8 +8,8 @@ import HomeBanner from '../../Components/HomeBanner';
 import RecipSearch from '../../Components/RecipSearch';
 import { useNavigation } from '@react-navigation/native';
 
-const Recipe = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+const ViewRecipe = ( {route}) => {
+    const [searchTerm, setSearchTerm] = useState(route.params.productName);
 
 
 
@@ -67,7 +67,7 @@ const nav=useNavigation()
   );
 };
 
-export default Recipe;
+export default ViewRecipe;
 
 const styles = StyleSheet.create({
   imageContainer: {

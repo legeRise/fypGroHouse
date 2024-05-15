@@ -3,7 +3,6 @@ from . import views
 
 urlpatterns = [
 
-    path('export_to_csv/', views.download_dataset_as_csv, name='export_to_csv'),
     path('list_models/', views.list_models, name='all_models'),
 
 

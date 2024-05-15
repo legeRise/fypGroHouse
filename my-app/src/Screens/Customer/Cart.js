@@ -36,6 +36,12 @@ const Cart = () => {
     return total + item.price * item.quantity;
   }, 0);
 
+
+
+  const handleViewRecipe = (item) => {
+    nav.navigate("ViewRecipe",{"productName": item.name})
+  }
+
   return (
     
     
@@ -166,8 +172,10 @@ const Cart = () => {
                     Rs {item.price * item.quantity}
                   </Text>
                 </View>
+              <TouchableOpacity onPress ={() => handleViewRecipe(item)} style={{ flexDirection : "row", justifyContent : "flex-end"}}>
+               <Text style={{ fontSize : 15,fontWeight : "400",color : "yellow", backgroundColor : "#2eb24b",borderRadius : 8,padding : 5}}>View Recipe</Text>
+               </TouchableOpacity>
               </View>
-              {/*///child 2 */}
             </View>
           )}
         />
