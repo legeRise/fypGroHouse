@@ -164,34 +164,6 @@ def delete_order(request):
     
 
 #_________________________________________ML Apis________________________________________________________
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def download_dataset_as_csv(request):
-    # Get the dataset queryset
-    queryset = Dataset.objects.all()
-    dataset_list = list(queryset.values())
-
-    if len(dataset_list) > 0:
-        # Create a file path to save the CSV
-        file_path = os.path.join(settings.MEDIA_ROOT,'dataset.csv')
-        
-        # Write data to CSV
-        with open(file_path, 'w', newline='') as csv_file:
-            writer = csv.DictWriter(csv_file, fieldnames=dataset_list[0].keys())
-            writer.writeheader()
-            for row in dataset_list:
-                writer.writerow(row)
-
-        # Construct the download URL
-        download_url = os.path.join(settings.MEDIA_URL,'dataset.csv')
-        print(download_url)
-
-
-        # Return a response with a link to download the file
-        return Response({ "download_link" : download_url},status=status.HTTP_200_OK)
-    else:
-        return Response({ "message" : "Sorry, the CSV file couldn't be generated as there are no data records available."},status=status.HTTP_404_NOT_FOUND)
-
 
 @csrf_exempt
 @permission_classes([IsAdminUser])

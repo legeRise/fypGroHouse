@@ -5,6 +5,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from statsmodels.tsa.arima.model import ARIMA
 from sklearn.metrics import mean_squared_error
+from grocery_app.models import Dataset
+import csv
 from django.conf import settings
 
 
@@ -80,69 +82,34 @@ def split_dataset_by_product(dataset):
     return data_location
 
 
-
+  
+  
 def download_dataset():
-    # Assuming the API endpoint is /export_to_csv/
-    api_url = settings.DOWNLOAD_URL
-    response = requests.get(api_url)
-    if response.status_code == 200:
-        print("done")
+    # Get the dataset queryset
+    queryset = Dataset.objects.all()
+    dataset_list = list(queryset.values())
+    print(len(dataset_list), 'total')
+
+    if len(dataset_list) > 0:
+        # Create a file path to save the CSV
+        file_path = os.path.join(settings.MEDIA_ROOT, 'dataset.csv')
+
+        # Write data to CSV
+        with open(file_path, 'w', newline='') as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=dataset_list[0].keys())
+            writer.writeheader()
+            for row in dataset_list:
+                writer.writerow(row)
+
+        # Construct the download URL
+        download_url = os.path.join(settings.MEDIA_URL, 'dataset.csv')
+        print(download_url)
+
+        return {"download_link": download_url, "status": "success"}
+    else:
+        return {"message": "Sorry, the CSV file couldn't be generated as there are no data records available.", "status": "failure"}
+
   
   
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-    #     # Parse JSON response to get download link
-    #     json_response = response.json()
-    #     download_link = json_response.get("download_link")
-        
-    #     if download_link:
-    #         # Download dataset from the obtained link
-    #         dataset_response = requests.get(download_link)
-    #         if dataset_response.status_code == 200:
-    #             # Assuming you have a specific directory to save the dataset
-    #             dataset_path = os.path.join(settings.MEDIA_ROOT, 'dataset.csv')
-    #             with open(dataset_path, 'wb') as f:
-    #                 f.write(dataset_response.content)
-    #             print("Dataset downloaded successfully.")
-    #         else:
-    #             print("Failed to download dataset from the provided link.")
-    #     else:
-    #         print("Download link not found in the response.")
-    # else:
-    #     print("Failed to fetch dataset. API request failed.")
-    # # Assuming the API endpoint is /export_to_csv/
-    # api_url = "http://192.168.134.135:9200/products/export_to_csv/"
-    # response = requests.get(api_url)
-    # if response.status_code == 200:
-    #     # Parse JSON response to get download link
-    #     json_response = response.json()
-    #     download_link = json_response.get("download_link")
-        
-    #     if download_link:
-    #         # Download dataset from the obtained link
-    #         dataset_response = requests.get(download_link)
-    #         if dataset_response.status_code == 200:
-    #             # Assuming you have a specific directory to save the dataset
-    #             dataset_path = os.path.join(settings.MEDIA_ROOT, 'dataset.csv')
-    #         else:
-    #             print("Failed to download dataset from the provided link.")
-    #             return None
-    #     else:
-    #         print("Download link not found in the response.")
-    #         return None
-    # else:
-    #     print("Failed to fetch dataset. API request failed.")
-    #     return None

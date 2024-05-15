@@ -58,6 +58,7 @@ import Final from "./src/Screens/Customer/Final";
 import OrderList from "./src/Screens/Admin/OrderList";
 import OrderDeatail from "./src/Screens/Admin/OrderDeatail";
 import AdminLogin from "./src/Screens/Admin/AdminLogin";
+import ApiUrl from './src/Screens/Customer/ApiUrl';
 import UserContext from './src/Contexts/UserContext';
 
 
@@ -132,6 +133,7 @@ const AppNavigator = () => {
           <Stack.Screen name="Final" component={Final} />
           <Stack.Screen name="OrderList" component={OrderList} />
           <Stack.Screen name="OrderDeatail" component={OrderDeatail} />
+          <Stack.Screen name="ApiUrl" component={ApiUrl} />
 
         </Stack.Navigator>
       </NavigationContainer>

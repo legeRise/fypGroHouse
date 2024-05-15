@@ -25,7 +25,7 @@ const ConfirmEmail = ( {route} ) => {
           method:'POST',
           headers:{
               'Content-Type':'application/json',
-              'Authorization':'Bearer ' + authToken.access
+              // 'Authorization':'Bearer ' + authToken.access
 
           },
           body : JSON.stringify(data)

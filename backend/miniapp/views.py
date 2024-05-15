@@ -72,6 +72,7 @@ class CustomerLoginView(TokenObtainPairView):
 
 
 class ConfirmEmailView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, format=None):
         email = request.data.get('email')
         code = request.data.get('code')

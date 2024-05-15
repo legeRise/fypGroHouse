@@ -67,7 +67,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const UserContextProvider = ({ children }) => {
-    const [baseUrl, setBaseUrl] = React.useState("http://192.168.59.249:9200");
+    // const [baseUrl, setBaseUrl] = React.useState("http://192.168.59.249:9200");
+    const [baseUrl, setBaseUrl] = React.useState("");
     const [customerId, setCustomerId] = React.useState("");
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
     const [authToken, setAuthToken] = React.useState(null); // Set initial state to null
@@ -126,7 +127,7 @@ const UserContextProvider = ({ children }) => {
             console.log('Hello');
             refreshToken('auth');
             // refreshToken('admin');
-        }, 1 * 60 * 1000); // Refresh tokens every minute
+        }, 1 * 24 * 60 * 60 * 1000); // Refresh tokens every minute
 
         return () => clearInterval(interval);
     }, []);

@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import UserContext from "../../Contexts/UserContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Animated } from "react-native";
 
 
 const Login = () => {
@@ -20,6 +21,7 @@ const Login = () => {
 
 
   const handleLogin = async () => {
+    console.log(baseUrl,'is the base url from login')
     // Check if username and password are provided
     if (!username || !password) {
       Alert.alert("Error",'Username and password are required');
@@ -148,24 +150,9 @@ const Login = () => {
               color="black"
             />
           </View>
-          <TouchableOpacity
-            onPress={() => {
-              nav.navigate('Forgotpass');
-            }}
-            numberOfLines={2}
-            style={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: "black",
-              marginTop: 15,
-              letterSpacing: 0.7,
-              lineHeight: 25,
-              marginLeft: 215,
-              opacity: 0.9,
-            }}
-          >
-            <Text  style={{color:"black",fontWeight:"bold",fontSize:14}}>Forgot Password?</Text>
-          </TouchableOpacity>
+
+
+          
           <TouchableOpacity
             onPress={handleLogin}
             style={{
@@ -233,6 +220,27 @@ const Login = () => {
                 Login
               </Text>
             </TouchableOpacity>
+
+
+          </View>
+          <View style={{ flexDirection: "row", justifyContent: "flex-end"  }}>
+          <TouchableOpacity
+            onPress={() => nav.navigate("ApiUrl")}
+            style={{
+              backgroundColor: "#2eb24b",
+              width : 80,
+              marginTop: 30,
+              height: 30,
+              borderRadius: 20,
+              alignItems: "center",
+              justifyContent: "flex-end",
+              marginTop: 40,
+            }}
+          >
+            <Text style={{ fontSize: 19, color: "white", fontWeight: "600" }}>
+              Set Url
+            </Text>
+          </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
