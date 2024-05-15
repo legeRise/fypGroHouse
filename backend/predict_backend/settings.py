@@ -152,15 +152,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
-# MODEL_PATHS = {
-#     "chicken": "models/chicken_sales_predictor.pkl",
-#     "eggs": "models/eggs_sales_predictor.pkl",
-#     "milk": "models/milk_sales_predictor.pkl",
-#     "potato": "models/potato_sales_predictor.pkl",
-#     "rice": "models/rice_sales_predictor.pkl",
-#     "sugar": "models/sugar_sales_predictor.pkl",
-#     "tomato": "models/tomato_sales_predictor.pkl"
-# }
+
 
 
 
@@ -168,6 +160,7 @@ AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME= os.getenv("AWS_S3_REGION_NAME")
+
 
 
 
