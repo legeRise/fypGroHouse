@@ -5,37 +5,163 @@ import {
   TouchableOpacity,
   ScrollView,
   LogBox,
+  Alert
 } from "react-native";
-import React,{useState} from "react";
+import React,{useContext, useState,useEffect} from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import Home from "./Home";
 import { myColors } from "../../Utils/myColors";
 import { MaterialIcons } from "@expo/vector-icons";
-import Dropbox from "../../Components/Dropbox";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector  } from "react-redux";
 import { addToCart } from "../../../Redux/CartSlice";
-// import Rate from "../../Components/Rate";
+import { addToFavourites,removeFromFavourites } from "../../../Redux/FavouriteSlice";
+import UserContext from "../../Contexts/UserContext";
+
 
 
 LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
 const Details = ({ route }) => {
-
-
-  const [filled, setFilled] = useState(false);
-
+  
   const nav=useNavigation()
   const dispatch = useDispatch();
   const productData = route.params?.main;
   console.log(route)
   console.log(productData)
-  const { name, price, pieces, image } = productData;
 
-
+  const { name, price, image,description,unit } = productData;
+  const { baseUrl, authToken }  = useContext(UserContext)
+  const [filled, setFilled] = useState(false);
+  
   const toggleFilled = () => {
     setFilled(!filled);
+    if (!filled) {
+      addFavourite(productData.id)
+      Alert.alert("Success","Product Added to Favourites")
+    } else {
+      removeFavourite(productData.id)
+      Alert.alert("Success","Product Removed from Favourites")
+    }
+  
+    
   };
+
+
+
+  const addFavourite = async (productId) => {
+    try {
+      const response = await fetch(`${baseUrl}/products/add_to_favourites/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + authToken.access
+        },
+        body: JSON.stringify({ product: productId }) // Ensure body is JSON string
+      });
+  
+      if (response.ok) {
+        const jsonData = await response.json();
+        if (response.status === 200) {
+          Alert.alert("Success",jsonData.message || "Success");
+        }
+        console.log(jsonData); // Log the data to the console
+      } else {
+        const jsonData = await response.json();
+        if (response.status === 404) {
+          alert(jsonData.message);
+        } else if (response.status === 400) {
+          alert(jsonData.message || "Bad request");
+        } else {
+          alert(jsonData.message || "Something went wrong");
+        }
+      }
+  
+    } catch (error) {
+      console.log('Error fetching data:', error);
+    }
+  };
+  
+
+
+  const removeFavourite = async (productId) => {
+    try {
+      const response = await fetch(`${baseUrl}/products/remove_from_favourites/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + authToken.access
+        },
+
+      });
+  
+      if (response.ok) {
+        const jsonData = await response.json();
+        if (response.status === 200) {
+          Alert.alert("Success",jsonData.message || "Success");
+        }
+        console.log(jsonData); // Log the data to the console
+      } else {
+        const jsonData = await response.json();
+        if (response.status === 404) {
+          alert(jsonData.message);
+        } else if (response.status === 400) {
+          alert(jsonData.message || "Bad request");
+        } else {
+          alert(jsonData.message || "Something went wrong");
+        }
+      }
+  
+    } catch (error) {
+      console.log('Error fetching data:', error);
+    }
+  };
+
+
+  
+  useEffect(() => {
+    const fetchUserFavourites = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/products/get_user_favourites`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken.access}` // Assuming authToken is a valid token
+          }
+        });
+
+        if (response.ok) {
+          const jsonData = await response.json();
+          const isFavourite = jsonData.some((item) => item.id === productData.id)
+          console.log(isFavourite,'from the api 143')
+          setFilled(isFavourite)
+          
+        } else {
+          const errorData = await response.json();
+          Alert.alert('Error', errorData.message || 'Failed to fetch favourites');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        Alert.alert('Error', 'Failed to fetch favourites');
+      }
+    };
+
+    fetchUserFavourites();
+
+    // Cleanup function to cancel any pending requests if the component unmounts
+    return () => {
+      // Add any cleanup code if needed
+    };
+  }, []);
+
+  
+
+
+
+
+  
+  
+
+
 
   
   return (
@@ -103,9 +229,11 @@ const Details = ({ route }) => {
               paddingTop: 20,
             }}
           >
-            Rs {price}/{pieces}
+            Rs {price}/{unit}
           </Text>
-          <Dropbox />
+          <Text style={{ fontSize: 20, color: myColors.third, fontWeight: "700",paddingBottom : 10 }}>Description</Text>
+          <Text>{description}</Text>
+          {/* <Dropbox /> */}
           {/* <Rate/> */}
         </View>
       </ScrollView>

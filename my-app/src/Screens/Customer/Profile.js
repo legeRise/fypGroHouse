@@ -169,12 +169,12 @@ const Profile = () => {
         </View>
         <View style={styles.menuWrapper}>
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => nav.navigate("favourites")}
             style={{ justifyContent: "flex-star" }}
           >
             <View style={[styles.menuItem, { alignItems:"center" }]}>
             <MaterialCommunityIcons name="heart-outline" size={25} color="#FF6347"   style={{marginRight: 15}}/>
-              <Text>Your Favourite</Text>
+              <Text>Your Favourites</Text>
             </View>
           </TouchableOpacity>
 

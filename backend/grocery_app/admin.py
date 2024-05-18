@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product,Prediction_Model,Dataset,Category,Order,OrderProduct,Interaction,Prediction
+from .models import Product,Prediction_Model,Dataset,Category,Order,OrderProduct,Interaction,Prediction,Favourite
 # Register your models here.
 
 admin.site.register(Product)
@@ -12,5 +12,6 @@ admin.site.register(Order)
 admin.site.register(OrderProduct)
 admin.site.register(Interaction)
 admin.site.register(Prediction)
+admin.site.register(Favourite)
 
 

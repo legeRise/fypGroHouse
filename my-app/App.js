@@ -26,6 +26,7 @@ import CategoryFlatlist from "./src/Components/CategoryFlatlist";
 import Products from "./src/Screens/Customer/Products";
 
 
+
 import { useContext,useEffect,useState } from 'react';
 import Forgotpass from "./src/Screens/Customer/Forgotpass";
 import ConfirmEmail from "./src/Screens/Customer/ConfirmEmail";
@@ -61,6 +62,8 @@ import OrderDeatail from "./src/Screens/Admin/OrderDeatail";
 import AdminLogin from "./src/Screens/Admin/AdminLogin";
 import ApiUrl from './src/Screens/Customer/ApiUrl';
 import UserContext from './src/Contexts/UserContext';
+// import Favourites  from './src/Screens/Customer/favourites';
+import Favourites from "./src/Screens/Customer/Favourites"
 
 
 
@@ -136,6 +139,7 @@ const AppNavigator = () => {
           <Stack.Screen name="OrderList" component={OrderList} />
           <Stack.Screen name="OrderDeatail" component={OrderDeatail} />
           <Stack.Screen name="ApiUrl" component={ApiUrl} />
+          <Stack.Screen name="favourites" component={Favourites} />
 
         </Stack.Navigator>
       </NavigationContainer>

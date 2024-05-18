@@ -9,7 +9,6 @@ import HomeIcon from '../../Components/HomeIcon';
 import UserContext from '../../Contexts/UserContext';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native';
-import { current } from '@reduxjs/toolkit';
 // import { useFocusEffect } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;

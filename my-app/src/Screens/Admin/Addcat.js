@@ -16,7 +16,6 @@ export default function Addcat() {
 
   const { baseUrl,adminToken } = useContext(UserContext)
 
-  // const [id, setId] = useState(new Date().getTime());
   const [name, setName] = useState('');
   const [image, setImage] = useState('');
 

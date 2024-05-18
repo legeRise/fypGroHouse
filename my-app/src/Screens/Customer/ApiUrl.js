@@ -1,31 +1,3 @@
-// import React, { useState, useContext } from 'react';
-// import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-// import UserContext from '../../Contexts/UserContext';
-
-// const ApiUrl = () => {
-//     const { baseUrl, setBaseUrl } = useContext(UserContext);
-//     const [newUrl, setNewUrl] = useState('');
-
-//     const handleConfirm = () => {
-//         setBaseUrl(newUrl);
-//     };
-
-//     return (
-//         <View>
-//             <Text>Enter API URL:</Text>
-//             <TextInput
-//                 placeholder="Enter URL"
-//                 value={newUrl}
-//                 onChangeText={setNewUrl}
-//             />
-//             <TouchableOpacity onPress={handleConfirm}>
-//                 <Text>Confirm</Text>
-//             </TouchableOpacity>
-//         </View>
-//     );
-// };
-
-// export default ApiUrl;
 
 
 import React, { useContext, useState } from 'react';

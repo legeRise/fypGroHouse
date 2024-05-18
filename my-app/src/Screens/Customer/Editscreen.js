@@ -51,22 +51,22 @@ const Editscreen = ({ navigation, route }) => {
   };
 
   const handleImagePress = () => {
-    setImageModalVisible(true);
+    // setImageModalVisible(true);
   };
 
-  const handleModalClose = () => {
-    setImageModalVisible(false);
-  };
+  // const handleModalClose = () => {
+  //   setImageModalVisible(false);
+  // };
 
-  const handleGalleryPress = () => {
-    console.log("Gallery pressed");
-    handleModalClose();
-  };
+  // const handleGalleryPress = () => {
+  //   console.log("Gallery pressed");
+  //   handleModalClose();
+  // };
 
-  const handleCameraPress = () => {
-    console.log("Camera pressed");
-    handleModalClose();
-  };
+  // const handleCameraPress = () => {
+  //   console.log("Camera pressed");
+  //   handleModalClose();
+  // };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -99,34 +99,6 @@ const Editscreen = ({ navigation, route }) => {
             />
           </TouchableOpacity>
 
-          <Modal
-            animationType="slide"
-            transparent={false}
-            visible={imageModalVisible}
-            onRequestClose={handleModalClose}
-          >
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>Select an option</Text>
-              <TouchableHighlight
-                style={styles.modalButton}
-                onPress={handleGalleryPress}
-              >
-                <Text style={styles.modalButtonText}>Gallery</Text>
-              </TouchableHighlight>
-              <TouchableHighlight
-                style={styles.modalButton}
-                onPress={handleCameraPress}
-              >
-                <Text style={styles.modalButtonText}>Camera</Text>
-              </TouchableHighlight>
-              <TouchableHighlight
-                style={styles.modalCloseButton}
-                onPress={handleModalClose}
-              >
-                <Text style={styles.modalCloseButtonText}>Close</Text>
-              </TouchableHighlight>
-            </View>
-          </Modal>
         </View>
       </View>
       <TextInput

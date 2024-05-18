@@ -36,6 +36,16 @@ class Product(models.Model):
         return self.name 
     
 
+class Favourite(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.customer.username} - {self.product.name}'
+    
+    
+
 
 
 
@@ -61,15 +71,9 @@ class Order(models.Model):
 
 class OrderProduct(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, default=None)
-    product = models.ForeignKey(Product, on_delete=models.SET_DEFAULT, default=None, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, default=None, null=True)
     quantity = models.PositiveIntegerField(default=1)
 
-    # Custom method to get the product name
-    def product_name(self):
-        if self.product_id is not None:
-            return self.product.name
-        else:
-            return "Product Not Available"  # Placeholder for deleted products
 
     def __str__(self):
        return f"Order id: {self.order.id} --- Product id: {self.product_id} ---- Quantity: {self.quantity}"

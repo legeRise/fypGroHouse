@@ -1,4 +1,4 @@
-import { StyleSheet, FlatList, Text, View, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, FlatList, Text, View, TouchableOpacity, Image,Alert } from 'react-native'
 import React, { useState,useEffect,useContext } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeIcon from '../../Components/HomeIcon';
@@ -70,7 +70,9 @@ const handleOrderDetailView = async (item) => {
         });
         
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+           const data = await response.json()
+          Alert.alert("Error",data.message)
+          nav.navigate("OrderList")
         }
         
         // Parse response JSON
@@ -84,7 +86,7 @@ const handleOrderDetailView = async (item) => {
         // Navigate to the OrderDetail screen with orderSummary
         nav.navigate("OrderDeatail", { orderSummary,orderId: item.id });
     } catch (error) {
-        console.error('There was a problem fetching the data:', error);
+        console.log('There was a problem fetching the data:', error);
     }
   };
 

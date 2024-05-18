@@ -7,10 +7,10 @@ from rest_framework.permissions import IsAdminUser,AllowAny
 from rest_framework import status
 from .useful_functions import remove_duplicates
 from django.conf import settings
-from .models import Product,Prediction_Model,Dataset,Category,Order,OrderProduct,Customer,Product,Interaction
+from .models import Product,Prediction_Model,Dataset,Category,Order,OrderProduct,Customer,Product,Interaction,Favourite
 from .useful_functions import save_profile_pic
 from .helper_functions import load_model
-from .serializers import ProductSerializer,CategorySerializer,OrderSerializer,InteractionSerializer
+from .serializers import ProductSerializer,CategorySerializer,OrderSerializer,InteractionSerializer,FavouriteSerializer
 import numpy as np
 import os
 import uuid
@@ -25,6 +25,12 @@ def single_order_detail(request, order_id):
     product_list_in_order = single_order.orderproduct_set.all()
 
     order_summary = []
+
+    if not product_list_in_order:
+        single_order.delete()
+        return Response({"message" : "Order Does Not Exist"}, status=status.HTTP_404_NOT_FOUND)
+    
+
     for single_product in product_list_in_order:
         product_id = single_product.product.id
         product_name = single_product.product.name
@@ -127,13 +133,13 @@ def approve_order(request):
         if product.current_stock < quantity_to_be_sold:
             # If stock is insufficient, return a response with approved=False and an appropriate message
             return Response({"order_id": order_id, "message": "Available Stock is not Sufficient", "approved": False},status=status.HTTP_400_BAD_REQUEST)
-        
-        # Update stock_sold and current_stock for the product
-        product.stock_sold += quantity_to_be_sold
-        product.current_stock -= quantity_to_be_sold
-        product.save()
-
-        order.approved = True
+        else:
+            # Update stock_sold and current_stock for the product
+            product.stock_sold += quantity_to_be_sold
+            product.current_stock -= quantity_to_be_sold
+            product.save()
+            order.approved = True
+            
         print("total in database ", order.total, "total after approval", total_amount)
         order.total = total_amount
         order.save()
@@ -310,8 +316,88 @@ def delete_product(request, product_id):
     return Response({'message': 'Product deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 
+#____________________________________favourite feature _____________________________________________________
+# add to favourites
+@api_view(['POST'])
+def add_to_favourites(request):
+
+    product_id = request.data.get('product')
+    customer_id = request.user.id
+    request.data["customer"] = customer_id
+
+    try:
+        customer = Customer.objects.get(id =customer_id)
+        product = Product.objects.get(id=product_id)
 
 
+        # Check if the product is already in the user's favourites
+        if Favourite.objects.filter(customer=customer, product=product).exists():
+            return Response({"message": "Product already in favourites"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = FavouriteSerializer(data= request.data)  # mention data= is important ---just (request.data) will get you error
+        print(serializer,'this is the serializer while addign the product to favourites')
+        print(serializer.initial_data)
+        if serializer.is_valid():
+            print("\n\n\n yes it is valid \n\n\n")
+            serializer.save()
+            return Response({"message": "Product added to favourites"}, status=status.HTTP_201_CREATED)
+
+    except Product.DoesNotExist:
+        return Response({"message": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
+
+@api_view(['DELETE'])
+def remove_from_favourites(request, product_id):
+    try:
+        # Extract customer ID from the request user
+        customer_id = request.user.id
+
+        # Check if the product exists in the user's favourites
+        favourite = Favourite.objects.get(customer=customer_id, product=product_id)
+        favourite.delete()
+
+        return Response({"message": "Product removed from favourites"}, status=status.HTTP_200_OK)
+
+    except Product.DoesNotExist:
+        return Response({"message": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    except Favourite.DoesNotExist:
+        return Response({"message": "Product is not in favourites"}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    
+   
+
+@api_view(['GET'])
+def get_user_favourites(request):
+    try:
+        customer = request.user
+        favourites = customer.favourite_set.all()
+        favourites_data = []
+        for favourite in favourites:
+            product = Product.objects.get(id=favourite.product.id)
+            product_data = ProductSerializer(product).data
+            favourites_data.append(product_data)
+
+        print(favourites_data, 'are all the favourites of the user', request.user.username)
+        
+        return Response(favourites_data, status=status.HTTP_200_OK)
+    
+    except Customer.DoesNotExist:
+        return Response({"message": "Customer not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    except Product.DoesNotExist:
+        return Response({"message": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+        return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 #____________________________________ Category Apis_____________________________________________________
 
 
@@ -381,7 +467,6 @@ def update_category(request, pk):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # delete a category api
@@ -436,7 +521,10 @@ def user_recommendations(request):
             # Check if the product is not purchased by the target user
             if not Interaction.objects.filter(customer=user_target, product=interaction.product, purchased=True).exists():
                 productData =ProductSerializer(interaction.product)
-                recommendations.append(productData.data)
+                product = productData.data
+                product["category"] = Category.objects.get(pk=product["category"]).name
+                print("this is the productData product",product)
+                recommendations.append(product)
         recommendations = remove_duplicates(recommendations,'id')
 
     return Response({'recommended_products': recommendations})
@@ -452,9 +540,19 @@ def best_sellings(request):
     
     # Serialize the top products using the ProductSerializer
     serializer = ProductSerializer(top_products, many=True)
+    print(serializer,'this is the best sellign doing this')
     
+
     # Extract serialized data from the serializer
     best_selling_products = serializer.data
+    print(best_selling_products)
+    for product in best_selling_products:
+        product["category"] = Category.objects.get(pk=product["category"]).name
+    print(best_selling_products) 
+    print(best_selling_products,'is the new chagne')
+
+
+    
     
     return Response({"best_selling_products": best_selling_products})
 
@@ -495,7 +593,6 @@ def record_user_item_interactions(request):
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
 def predict(request, model_name):
-    # model_name =model_name.lower()
     print(model_name,'is the name')
     try:
         product_model =Prediction_Model.objects.get(name = f"{model_name}_model")

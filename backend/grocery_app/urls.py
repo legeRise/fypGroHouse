@@ -15,6 +15,9 @@ urlpatterns = [
     path('update_product/<str:product_id>', views.update_product, name='update_product'),
     path('delete_product/<str:product_id>', views.delete_product, name='delete_product'),
     path('best_sellings/',views.best_sellings,name='best_sellings'),
+    path('add_to_favourites/',views.add_to_favourites,name='add_to_favourites'),
+    path('remove_from_favourites/<str:product_id>',views.remove_from_favourites,name='remove_from_favourites'),
+    path('get_user_favourites/',views.get_user_favourites,name='get_user_favourites'),
 
 
     #orders apis
