@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "my-app",
+    "name": "GroHouse",
     "slug": "my-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/icon.png", 
+    "icon": "./src/assets/veg.png", 
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./src/assets/splash2.png",
@@ -24,7 +24,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/adaptive-icon.png",
+        "foregroundImage": "./src/assets/veg.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [

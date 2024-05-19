@@ -136,6 +136,9 @@ def approve_order(request):
         else:
             # Update stock_sold and current_stock for the product
             product.stock_sold += quantity_to_be_sold
+            product.daily_stock_sold += quantity_to_be_sold
+            product.weekly_stock_sold += quantity_to_be_sold
+            product.monthly_stock_sold += quantity_to_be_sold
             product.current_stock -= quantity_to_be_sold
             product.save()
             order.approved = True

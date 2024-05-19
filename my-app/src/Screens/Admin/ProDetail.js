@@ -25,12 +25,23 @@ const ProDetail = ({ route, navigation }) => {
 
   console.log("this is the productData in ProDetail", productData);
   // State variables for selected year and month
-  const [selectedYear, setSelectedYear] = useState("2023");
   const [selectedMonth, setSelectedMonth] = useState("Monthly");
   const [predictedStock, setPredictedStock] = useState(0);
-  console.log(productData.stock_sold)
-  const [actualStock, setActualStock] = useState(productData.stock_sold);
-   console.log("hmmm 34 ")
+  const [actualStock, setActualStock] = useState(productData.monthly_stock_sold);
+
+
+
+  useEffect(() => {
+    if (selectedMonth === "Weekly") {
+      console.log("\n\nWeekly is selected\n\n")
+      setActualStock(productData.weekly_stock_sold);
+    } else if (selectedMonth === "Monthly") {
+      console.log("\n\nMonthly is selected\n\n")
+      setActualStock(productData.monthly_stock_sold);
+    }
+  }, [selectedMonth, productData]);
+
+
   useEffect(() => {
     // Do nothing if price or selectedMonth is not set yet
     if (!price || !selectedMonth) return;

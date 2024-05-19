@@ -1,6 +1,7 @@
 from django.db import models
 from miniapp.models import Customer
 from django.utils import timezone
+from datetime import timedelta
 
 
 class Category(models.Model):
@@ -31,9 +32,18 @@ class Product(models.Model):
     image = models.CharField(max_length=250,blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    daily_stock_sold = models.IntegerField(blank=False,default=0)
+    weekly_stock_sold = models.IntegerField(blank=False,default=0)
+    monthly_stock_sold = models.IntegerField(blank=False,default=0)
+
 
     def __str__(self):
         return self.name 
+    
+
+    
+
+
     
 
 class Favourite(models.Model):

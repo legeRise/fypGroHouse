@@ -5,12 +5,35 @@ from grocery_app.helper_functions import split_dataset_by_product,preprocess_and
 import os
 
 
+def reset_daily_stock_sold():
+    all_products = Product.objects.all()
+    for product in all_products:
+        product.daily_stock_sold =0
+        product.save()
+    print("\n\n-------daily Stock Sold was reset-------\n\n")
+
+def reset_weekly_stock_sold():
+    all_products = Product.objects.all()
+    for product in all_products:
+        product.weekly_stock_sold =0
+        product.save()
+    print("\n\n-------weekly Stock Sold was reset-------\n\n")
+def reset_monthly_stock_sold():
+    all_products = Product.objects.all()
+    for product in all_products:
+        product.monthly_stock_sold =0
+        product.save()
+    print("\n\n-------monthly Stock Sold was reset-------\n\n")
+
+
+
 def add_new_data():
     all_products = Product.objects.all()
     for product in all_products:
 
         print('Total Products',len(all_products))
-        new_data =Dataset(product=product,price=product.price,sales=product.stock_sold) 
+        new_data =Dataset(product=product,price=product.price,sales=product.daily_stock_sold) 
+        # new_data =Dataset(product=product,price=product.price,sales=product.stock_sold) 
         new_data.save()
 
 
