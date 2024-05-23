@@ -31,6 +31,67 @@ The admin side provides comprehensive management tools:
 - **JWT Authentication**: Ensures secure access to the app’s features. Only authenticated users can access the app, and only authorized users (admins) can perform CRUD operations.
 - **Permissions Setup**: Strictly controls access to different functionalities based on user roles.
 
+## Setup
+
+To set up the project, follow these steps:
+
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/legeRise/fypGroHouse.git
+    ```
+2. Navigate into the project directory:
+    ```bash
+    cd fypGroHouse
+    ```
+    Inside this directory, you will find `my-app` and `backend` folders along with this README file.
+
+### Frontend Setup
+
+1. Navigate into the `my-app` directory:
+    ```bash
+    cd my-app
+    ```
+2. Install all dependencies:
+    ```bash
+    npm install
+    ```
+3. Start the frontend application:
+    ```bash
+    npx expo start
+    ```
+
+### Backend Setup
+
+1. Navigate into the `backend` directory:
+    ```bash
+    cd ../backend
+    ```
+2. Create a virtual environment:
+    ```bash
+    python -m venv env
+    ```
+3. Activate the virtual environment:
+    - On Windows:
+        ```bash
+        .\env\Scripts\activate
+        ```
+    - On macOS/Linux:
+        ```bash
+        source env/bin/activate
+        ```
+4. Install all dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+5. Run the backend server:
+    ```bash
+    python manage.py runserver
+    ```
+    By default, the server runs on port 8000. To run it on a different port, such as 9200, use:
+    ```bash
+    python manage.py runserver 0.0.0.0:9200
+    ```
+
 ## Contributors
 
 - **Jawad Ahmad**: Frontend development using React Native.
