@@ -261,6 +261,7 @@ def add_product(request):
 @permission_classes([IsAdminUser])
 def update_product(request, product_id):
     print(request.data)
+    print("yeah i was here")
     product = Product.objects.get(pk=product_id)
     print(product)
 
@@ -279,8 +280,9 @@ def update_product(request, product_id):
     if 'category' in request.data:
         print('inside 133')
         category = request.data["category"]
+        print(category,'is the 283')
         # Convert category string to category id
-        if category.isalpha():
+        if category.isalpha() or " " in category:
             print("inside 137",category)
             category = Category.objects.get(name=category)
             request.data["category"] = category.id
