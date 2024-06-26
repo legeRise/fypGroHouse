@@ -1,8 +1,9 @@
 # GroHouse Mobile Application
 
+GroHouse is a comprehensive mobile application designed to facilitate grocery store operations for both sellers (store owners) and buyers (customers). Built with a React Native frontend and a Django backend, GroHouse offers a robust and user-friendly solution tailored for a single vendor scenario.
+
 ![Interface](https://github.com/legerise/fypgrohouse/raw/main/grohouse_collage.jpg)
 
-GroHouse is a comprehensive mobile application designed to facilitate grocery store operations for both sellers (store owners) and buyers (customers). Built with a React Native frontend and a Django backend, GroHouse offers a robust and user-friendly solution tailored for a single vendor scenario.
 
 ## Features
 
